@@ -56,6 +56,53 @@ export function BikeAnatomy() {
   const [drawn, setDrawn] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const chapterRefs = useRef<(HTMLElement | null)[]>([]);
+  const stageInnerRef = useRef<HTMLDivElement>(null);
+  const labelsRef = useRef<HTMLOListElement>(null);
+
+  /*
+   * Desktop: line up the "01 motor · 02 battery · 03 frame" row with the stat
+   * labels of the chapter being read. The pinned stage and a chapter being read
+   * share a centre line, so the offset of the stat labels from their chapter's
+   * centre tells us where the row must sit. Measured per chapter, because the
+   * chapters' text blocks are not the same height.
+   */
+  useEffect(() => {
+    const inner = stageInnerRef.current;
+    const labels = labelsRef.current;
+    if (!inner || !labels) return;
+    const desktop = window.matchMedia('(min-width: 48em)');
+
+    const align = () => {
+      if (!desktop.matches) {
+        inner.style.transform = '';
+        return;
+      }
+      const index = Math.max(
+        0,
+        CHAPTERS.findIndex((chapter) => chapter.part === active),
+      );
+      const chapter = chapterRefs.current[index];
+      const statLabel = chapter?.querySelector('[data-stat-label]');
+      if (!chapter || !statLabel) return;
+      const chapterBox = chapter.getBoundingClientRect();
+      const labelBox = statLabel.getBoundingClientRect();
+      const fromCentre =
+        labelBox.top +
+        labelBox.height / 2 -
+        (chapterBox.top + chapterBox.height / 2);
+      // Where the row sits now, relative to the stage centre (transform ignored).
+      const rowFromCentre = inner.offsetHeight / 2 - labels.offsetHeight / 2;
+      inner.style.transform = `translateY(${Math.round(fromCentre - rowFromCentre)}px)`;
+    };
+
+    align();
+    window.addEventListener('resize', align);
+    desktop.addEventListener('change', align);
+    return () => {
+      window.removeEventListener('resize', align);
+      desktop.removeEventListener('change', align);
+    };
+  }, [active]);
 
   // Light the part of the chapter that crosses the middle band of the viewport.
   useEffect(() => {
@@ -112,20 +159,30 @@ export function BikeAnatomy() {
         </h2>
 
         <div className="mt-[clamp(3rem,8vw,6rem)] grid gap-x-16 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-          <div className="anatomy-stage sticky top-[var(--header-height)] z-20 -mx-[clamp(1rem,4vw,3.5rem)] bg-ink px-[clamp(1rem,4vw,3.5rem)] py-4 md:top-[calc(50vh-15rem)] md:mx-0 md:self-start md:bg-transparent md:p-0">
-            <BikeDrawing active={active} pending={armed && !drawn} />
-            <ol className="mt-4 hidden justify-center gap-8 text-xs tracking-[0.2em] uppercase md:flex">
-              {CHAPTERS.map((chapter) => (
-                <li
-                  key={chapter.part}
-                  className={`!m-0 transition-colors duration-500 ${
-                    active === chapter.part ? 'text-copper' : 'text-sand-muted'
-                  }`}
-                >
-                  {chapter.index} {chapter.part}
-                </li>
-              ))}
-            </ol>
+          <div className="anatomy-stage sticky top-[var(--header-height)] z-20 -mx-[clamp(1rem,4vw,3.5rem)] bg-ink px-[clamp(1rem,4vw,3.5rem)] py-4 md:mx-0 md:flex md:h-[calc(100svh-var(--header-height))] md:flex-col md:justify-center md:self-start md:bg-transparent md:p-0">
+            <div
+              ref={stageInnerRef}
+              className="transition-transform duration-700 ease-[var(--ease-dive)]"
+            >
+              <BikeDrawing active={active} pending={armed && !drawn} />
+              <ol
+                ref={labelsRef}
+                className="mt-4 hidden justify-center gap-8 text-xs tracking-[0.2em] uppercase md:flex"
+              >
+                {CHAPTERS.map((chapter) => (
+                  <li
+                    key={chapter.part}
+                    className={`!m-0 transition-colors duration-500 ${
+                      active === chapter.part
+                        ? 'text-copper'
+                        : 'text-sand-muted'
+                    }`}
+                  >
+                    {chapter.index} {chapter.part}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
 
           <div className="relative z-0">
@@ -137,10 +194,10 @@ export function BikeAnatomy() {
                 }}
                 data-part={chapter.part}
                 data-active={active === chapter.part || undefined}
-                className={`anatomy-chapter flex flex-col justify-center ${
-                  i === CHAPTERS.length - 1
-                    ? 'pt-16 md:min-h-[60vh] md:justify-end'
-                    : 'min-h-[70vh] py-16 md:min-h-[85vh]'
+                // On desktop each chapter is one visible screen tall and centred, like
+                // the pinned bike, so the text being read and the bike share a centre line.
+                className={`anatomy-chapter flex flex-col justify-center py-16 md:min-h-[calc(100svh-var(--header-height))] md:py-0 ${
+                  i === CHAPTERS.length - 1 ? '' : 'min-h-[70vh]'
                 }`}
               >
                 <p className="font-display text-sm text-copper">
@@ -168,6 +225,7 @@ export function BikeAnatomy() {
                         <span
                           className="mt-2 block text-xs tracking-[0.15em] text-sand-muted uppercase"
                           aria-hidden="true"
+                          data-stat-label
                         >
                           {stat.label}
                         </span>
@@ -217,19 +275,39 @@ function BikeDrawing({
         <circle pathLength={1} cx="620" cy="330" r="10" strokeWidth="2" />
         {/* Seat post and saddle */}
         <path pathLength={1} d="M352 148 343 104" strokeWidth="7" />
-        <path pathLength={1} d="M300 100h78c8 0 12 4 10 9l-6 4h-80c-6 0-8-8-2-13Z" strokeWidth="3" />
+        <path
+          pathLength={1}
+          d="M300 100h78c8 0 12 4 10 9l-6 4h-80c-6 0-8-8-2-13Z"
+          strokeWidth="3"
+        />
         {/* Stem and bars */}
         <path pathLength={1} d="M566 136 560 100h46" strokeWidth="6" />
         <path pathLength={1} d="M600 100c18 0 28 6 34 18" strokeWidth="5" />
         {/* Crank, pedal, chain */}
         <path pathLength={1} d="M392 340 432 400" strokeWidth="7" />
         <path pathLength={1} d="M418 404h32" strokeWidth="8" />
-        <path pathLength={1} d="M392 314 180 320M392 366 180 340" strokeWidth="1.5" />
+        <path
+          pathLength={1}
+          d="M392 314 180 320M392 366 180 340"
+          strokeWidth="1.5"
+        />
         {/* Rear rack */}
-        <path pathLength={1} d="M110 206h120M120 206l56 120M226 206l-10 22" strokeWidth="3" />
+        <path
+          pathLength={1}
+          d="M110 206h120M120 206l56 120M226 206l-10 22"
+          strokeWidth="3"
+        />
         {/* Mudguards */}
-        <path pathLength={1} d="M40.2 305.3A142 142 0 0 1 251 207" strokeWidth="3" />
-        <path pathLength={1} d="M511.2 238.7A142 142 0 0 1 757.2 293.2" strokeWidth="3" />
+        <path
+          pathLength={1}
+          d="M40.2 305.3A142 142 0 0 1 251 207"
+          strokeWidth="3"
+        />
+        <path
+          pathLength={1}
+          d="M511.2 238.7A142 142 0 0 1 757.2 293.2"
+          strokeWidth="3"
+        />
       </g>
 
       <g className="bike-part" data-part="frame" data-state={state('frame')}>
@@ -244,10 +322,19 @@ function BikeDrawing({
         <path pathLength={1} d="M560 152h-14" strokeWidth="6" />
       </g>
 
-      <g className="bike-part" data-part="battery" data-state={state('battery')}>
+      <g
+        className="bike-part"
+        data-part="battery"
+        data-state={state('battery')}
+      >
         {/* Down tube with the battery inside it */}
         <path pathLength={1} d="M392 340 578 196" strokeWidth="22" />
-        <path pathLength={1} className="bike-cell" d="M412 318 556 206" strokeWidth="9" />
+        <path
+          pathLength={1}
+          className="bike-cell"
+          d="M412 318 556 206"
+          strokeWidth="9"
+        />
         <circle pathLength={1} cx="560" cy="203" r="5" strokeWidth="3" />
       </g>
 

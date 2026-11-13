@@ -749,3 +749,94 @@ button.header-icon.reset {
     display: none;
   }
 }
+
+/*
+* --------------------------------------------------
+* components/BikeAnatomy
+* --------------------------------------------------
+*/
+.anatomy-bike {
+  --bike-line: var(--color-sand);
+  height: auto;
+  overflow: visible;
+}
+
+.anatomy-bike :is(path, circle) {
+  fill: none;
+  stroke: var(--bike-line);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.anatomy-bike .bike-base {
+  opacity: 0.55;
+}
+
+.anatomy-bike .bike-part {
+  transition:
+    opacity 600ms var(--ease-dive),
+    filter 600ms var(--ease-dive);
+}
+
+.anatomy-bike .bike-part :is(path, circle) {
+  transition: stroke 600ms var(--ease-dive);
+}
+
+/* Once a chapter is active, its part glows copper and the others step back. */
+.anatomy-bike .bike-part[data-state='off'] {
+  opacity: 0.25;
+}
+
+.anatomy-bike .bike-part[data-state='on'] {
+  filter: drop-shadow(0 0 14px rgb(226 118 58 / 0.55));
+}
+
+.anatomy-bike .bike-part[data-state='on'] :is(path, circle) {
+  stroke: var(--color-copper);
+}
+
+.anatomy-bike .bike-cell {
+  stroke: var(--color-ink) !important;
+  stroke-dasharray: 0.06 0.03;
+}
+
+.anatomy-chapter {
+  opacity: 0.35;
+  transition: opacity 600ms var(--ease-dive);
+}
+
+.anatomy-chapter[data-active] {
+  opacity: 1;
+}
+
+/* Without JavaScript (no chapter is ever marked active) everything stays readable. */
+.anatomy:not(:has(.anatomy-chapter[data-active])) .anatomy-chapter {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The bike traces itself in the first time the section is reached. */
+  .anatomy-bike :is(path, circle) {
+    transition:
+      stroke-dashoffset 1800ms var(--ease-dive),
+      stroke 600ms var(--ease-dive);
+  }
+
+  .anatomy-bike .bike-part[data-part='frame'] :is(path, circle) {
+    transition-delay: 200ms, 0ms;
+  }
+
+  .anatomy-bike .bike-part[data-part='battery'] :is(path, circle) {
+    transition-delay: 450ms, 0ms;
+  }
+
+  .anatomy-bike .bike-part[data-part='motor'] :is(path, circle) {
+    transition-delay: 650ms, 0ms;
+  }
+
+  .anatomy-bike.is-pending :is(path, circle) {
+    stroke-dashoffset: 1;
+  }
+}

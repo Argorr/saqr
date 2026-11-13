@@ -9,6 +9,7 @@ import type {
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
 import {HeroVideo} from '~/components/HeroVideo';
+import {BikeAnatomy} from '~/components/BikeAnatomy';
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -71,6 +72,7 @@ export default function Homepage() {
   return (
     <div className="home">
       <HeroVideo />
+      <BikeAnatomy />
       {data.isShopLinked ? null : <MockShopNotice />}
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />

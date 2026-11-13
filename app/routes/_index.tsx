@@ -8,9 +8,17 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
+import {HeroVideo} from '~/components/HeroVideo';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [
+    {title: 'Saqr | Urban electric bikes'},
+    {
+      name: 'description',
+      content:
+        'Saqr designs light, quiet electric bikes for the city. Explore the range.',
+    },
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -62,6 +70,7 @@ export default function Homepage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="home">
+      <HeroVideo />
       {data.isShopLinked ? null : <MockShopNotice />}
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />

@@ -4,3 +4,27 @@
  */
 
 @import 'tailwindcss';
+@import '@fontsource-variable/unbounded';
+@import '@fontsource-variable/manrope';
+
+/*
+ * Saqr design tokens.
+ * Ink (night), sand (falcon plumage, desert) and one copper accent.
+ * Available as Tailwind utilities (bg-ink, text-sand, font-display…) and as CSS variables.
+ */
+@theme {
+  --color-ink: #0b0b0c;
+  --color-ink-2: #141416;
+  --color-ink-3: #1e1e21;
+  --color-line: #2c2c30;
+  --color-sand: #ece3d2;
+  --color-sand-muted: #a9a294;
+  --color-copper: #e2763a;
+  --color-copper-strong: #f08a4b;
+
+  --font-display: 'Unbounded Variable', 'Arial Black', system-ui, sans-serif;
+  --font-sans:
+    'Manrope Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --ease-dive: cubic-bezier(0.16, 1, 0.3, 1);
+}

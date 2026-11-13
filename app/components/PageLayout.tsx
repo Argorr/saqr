@@ -1,4 +1,4 @@
-import {Await, Link} from 'react-router';
+import {Await, Link, useLocation} from 'react-router';
 import {Suspense, useId} from 'react';
 import type {
   CartApiQueryFragment,
@@ -32,6 +32,9 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
+  // The homepage opens on a full-screen video, so the header floats over it.
+  const {pathname} = useLocation();
+  const overlayHeader = pathname === '/';
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
@@ -43,6 +46,7 @@ export function PageLayout({
           cart={cart}
           isLoggedIn={isLoggedIn}
           publicStoreDomain={publicStoreDomain}
+          overlay={overlayHeader}
         />
       )}
       <main>{children}</main>

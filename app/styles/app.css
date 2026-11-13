@@ -3,13 +3,15 @@
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
-  --header-height: 64px;
-  --color-dark: #000;
-  --color-light: #fff;
+  --header-height: 72px;
+  --color-dark: var(--color-ink);
+  --color-light: var(--color-sand);
 }
 
-img {
-  border-radius: 4px;
+@layer base {
+  img {
+    border-radius: 4px;
+  }
 }
 
 /*
@@ -28,9 +30,9 @@ img {
 * --------------------------------------------------
 */
 .mock-shop-notice {
-  background: var(--color-light);
-  border: 1px solid var(--color-dark);
-  border-left-width: 0.5rem;
+  background: var(--color-ink-2);
+  border: 1px solid var(--color-line);
+  border-left: 0.25rem solid var(--color-copper);
   margin: 1rem 0;
   padding: 0;
 
@@ -51,7 +53,7 @@ img {
   }
 
   footer {
-    background: rgba(0, 0, 0, 0.06);
+    background: rgb(255 255 255 / 0.04);
     padding: 0.5rem 1rem;
   }
 
@@ -85,7 +87,8 @@ img {
 }
 
 aside {
-  background: var(--color-light);
+  background: var(--color-ink-2);
+  color: var(--color-sand);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
   height: 100vh;
   width: min(var(--aside-width), 100vw);
@@ -97,7 +100,7 @@ aside {
 
 aside header {
   align-items: center;
-  border-bottom: 1px solid var(--color-dark);
+  border-bottom: 1px solid var(--color-line);
   display: flex;
   height: var(--header-height);
   justify-content: space-between;
@@ -154,7 +157,7 @@ aside li {
 }
 
 .overlay {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgb(0 0 0 / 0.55);
   bottom: 0;
   left: 0;
   opacity: 0;
@@ -180,7 +183,7 @@ aside li {
 }
 
 .overlay .light {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgb(0 0 0 / 0.4);
 }
 
 .overlay .cancel {
@@ -203,7 +206,8 @@ aside li {
 button.reset {
   border: 0;
   background: inherit;
-  font-size: inherit;
+  color: inherit;
+  font: inherit;
 }
 
 button.reset > * {
@@ -227,13 +231,48 @@ button.reset:hover:not(:has(> *)) {
 */
 .header {
   align-items: center;
-  background: #fff;
+  background: rgb(11 11 12 / 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
   display: flex;
+  font-size: 0.9375rem;
   height: var(--header-height);
-  padding: 0 1rem;
+  inset-inline: 0;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
   position: sticky;
   top: 0;
-  z-index: 1;
+  transition:
+    background-color 400ms var(--ease-dive),
+    border-color 400ms var(--ease-dive),
+    backdrop-filter 400ms var(--ease-dive);
+  z-index: 5;
+}
+
+/* Over the home hero: transparent until the visitor scrolls. */
+.header--overlay {
+  margin-bottom: calc(-1 * var(--header-height));
+}
+
+.header--overlay.header--transparent {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: transparent;
+}
+
+.header-logo {
+  align-items: center;
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.header-logo:hover {
+  text-decoration: none;
+}
+
+.header-logo svg {
+  display: block;
+  height: 30px;
+  width: auto;
 }
 
 .header-menu-mobile-toggle {
@@ -250,11 +289,10 @@ button.reset:hover:not(:has(> *)) {
 
 .header-menu-desktop {
   display: none;
-  grid-gap: 1rem;
   @media (min-width: 45em) {
     display: flex;
-    grid-gap: 1rem;
-    margin-left: 3rem;
+    gap: 2rem;
+    margin-inline-start: 3rem;
   }
 }
 
@@ -265,8 +303,8 @@ button.reset:hover:not(:has(> *)) {
 .header-ctas {
   align-items: center;
   display: flex;
-  grid-gap: 1rem;
-  margin-left: auto;
+  gap: 0.25rem;
+  margin-inline-start: auto;
 }
 
 .header-ctas > * {
@@ -279,7 +317,8 @@ button.reset:hover:not(:has(> *)) {
 * --------------------------------------------------
 */
 .footer {
-  background: var(--color-dark);
+  background: var(--color-ink);
+  border-top: 1px solid var(--color-line);
   margin-top: auto;
 }
 
@@ -292,7 +331,7 @@ button.reset:hover:not(:has(> *)) {
 }
 
 .footer-menu a {
-  color: var(--color-light);
+  color: var(--color-sand-muted);
   min-width: fit-content;
 }
 
@@ -642,4 +681,71 @@ button.reset:hover:not(:has(> *)) {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+/*
+* --------------------------------------------------
+* components/HeroVideo
+* --------------------------------------------------
+*/
+/* Lines rise into place one after another, like a falcon pulling out of a dive. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-reveal {
+    animation: hero-rise 1100ms var(--ease-dive) both;
+    animation-delay: var(--d, 0ms);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Header icon buttons: 44px touch targets around 22px glyphs. */
+.header-icon {
+  align-items: center;
+  display: inline-grid;
+  height: 44px;
+  justify-content: center;
+  position: relative;
+  width: 44px;
+}
+
+.header-ctas .header-icon:hover {
+  color: var(--color-copper);
+  text-decoration: none;
+}
+
+button.header-icon.reset:not(:has(> *)),
+button.header-icon.reset {
+  cursor: pointer;
+  height: 44px;
+  line-height: normal;
+}
+
+.header-cart-count {
+  background: var(--color-copper);
+  border-radius: 999px;
+  color: var(--color-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  inset-block-start: 6px;
+  inset-inline-end: 4px;
+  line-height: 1;
+  min-width: 1.1rem;
+  padding: 0.2rem 0.3rem;
+  position: absolute;
+  text-align: center;
+}
+
+@media (min-width: 48em) {
+  .header-menu-mobile-toggle.header-icon {
+    display: none;
+  }
 }

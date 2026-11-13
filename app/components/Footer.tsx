@@ -123,7 +123,7 @@ function activeLinkStyle({
   isPending: boolean;
 }) {
   return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
+    color: isActive ? 'var(--color-sand)' : undefined,
+    opacity: isPending ? 0.6 : undefined,
   };
 }

@@ -8,14 +8,17 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
+import {ProductConfigurator} from '~/components/product/ProductConfigurator';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {BIKE_SPECS, BIKE_TAG} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
+    {title: `${data?.product.title ?? 'Product'} | Saqr`},
+    {
+      name: 'description',
+      content: data?.product.seo.description ?? data?.product.description ?? '',
+    },
     {
       rel: 'canonical',
       href: `/products/${data?.product.handle}`,
@@ -45,11 +48,12 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
-  const [{product}] = await Promise.all([
+  const [{product}, {addons}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
-    // Add other queries here, so that they are loaded in parallel
+    // Accessories offered as add-ons on bikes, fetched in parallel.
+    storefront.query(PRODUCT_ADDONS_QUERY, {cache: storefront.CacheShort()}),
   ]);
 
   if (!product?.id) {
@@ -59,8 +63,11 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
+  const isBike = product.tags.includes(BIKE_TAG);
   return {
     product,
+    isBike,
+    addons: isBike ? (addons?.products.nodes ?? []) : [],
   };
 }
 
@@ -77,7 +84,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, isBike, addons} = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -95,31 +102,45 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
-
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
-      </div>
+    <div className="product-page -mx-4 px-[clamp(1rem,3vw,2.5rem)] pt-6 pb-[clamp(4rem,10vw,8rem)]">
+      <ProductConfigurator
+        product={product}
+        productOptions={productOptions}
+        selectedVariant={selectedVariant}
+        addons={addons}
+        isBike={isBike}
+      />
+
+      <section
+        aria-labelledby="product-details"
+        className="mx-auto mt-[clamp(4rem,10vw,7rem)] grid max-w-[1440px] gap-x-16 gap-y-10 border-t border-line pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+      >
+        <div>
+          <h2
+            id="product-details"
+            className="!mt-0 !mb-6 text-xs font-semibold tracking-[0.3em] text-copper uppercase"
+          >
+            Details
+          </h2>
+          <div
+            className="product-description max-w-[56ch] text-[1.0625rem] leading-relaxed text-sand/80"
+            dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+          />
+        </div>
+        {isBike ? (
+          <dl className="!m-0 grid content-start sm:grid-cols-2 sm:gap-x-10">
+            {BIKE_SPECS.map((spec) => (
+              <div key={spec.label} className="border-b border-line py-4">
+                <dt className="text-xs tracking-[0.15em] text-sand-muted uppercase">
+                  {spec.label}
+                </dt>
+                <dd className="!m-0 mt-1 text-sand">{spec.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+      </section>
       <Analytics.ProductView
         data={{
           products: [
@@ -184,6 +205,7 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    tags
     encodedVariantExistence
     encodedVariantAvailability
     options {
@@ -212,6 +234,35 @@ const PRODUCT_FRAGMENT = `#graphql
     seo {
       description
       title
+    }
+  }
+  ${PRODUCT_VARIANT_FRAGMENT}
+` as const;
+
+const PRODUCT_ADDONS_QUERY = `#graphql
+  fragment ProductAddon on Product {
+    id
+    title
+    handle
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    selectedOrFirstAvailableVariant {
+      ...ProductVariant
+    }
+  }
+  query ProductAddons($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    addons: collection(handle: "accessories") {
+      products(first: 6) {
+        nodes {
+          ...ProductAddon
+        }
+      }
     }
   }
   ${PRODUCT_VARIANT_FRAGMENT}

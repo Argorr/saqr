@@ -1,10 +1,10 @@
 # Photos produits · prompts
 
-Référence de style : `Prototype Saqr.png` (S1 Graphite), à la racine du projet.
+Référence de style : `design/products/s1-graphite.png` (S1 Graphite).
 
 ## Méthode
 
-- **Vélos** : ajouter `Prototype Saqr.png` en pièce jointe et demander une *modification* de l'image (Gemini ou ChatGPT).
+- **Vélos** : ajouter `design/products/s1-graphite.png` en pièce jointe et demander une *modification* de l'image (Gemini ou ChatGPT).
   On garde ainsi exactement le même vélo, le même angle et la même lumière ; seule la finition change.
   C'est indispensable pour le configurateur : les photos doivent se superposer parfaitement.
 - **Accessoires** : génération à partir du texte seul, dans la même conversation pour garder le même style.

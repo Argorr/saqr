@@ -728,26 +728,29 @@ button.reset:hover:not(:has(> *)) {
 
 /*
  * Hover zoom for card photos (a square frame with .hover-zoom-frame).
- * A zoom centred on the photo shifts it by a fraction of a pixel (-7.68px on a
- * 384px card): the GPU animates that smoothly, then the browser rounds it to a
- * whole pixel when the zoom ends and the photo jumps. So the zoom is anchored
- * top-left and re-centred with a shift rounded to whole pixels (2% of the
- * frame width, read through container units).
+ * Flat (2D) transforms only: 3D tricks (perspective, translateZ, will-change,
+ * backface-visibility) made the photo vanish in Firefox at the end of the zoom.
+ * - Chrome/Edge: a zoom centred on the photo shifts it by a fraction of a
+ *   pixel, rounded to a whole pixel when the zoom ends, so the photo jumps.
+ *   The zoom is anchored top-left and re-centred by a shift rounded to whole
+ *   pixels (2% of the frame width, read through container units).
+ * - Firefox snaps axis-aligned transforms to whole pixels on every frame, so
+ *   the slow end of the zoom moves in steps. A 0.01deg turn (invisible) keeps
+ *   it from snapping.
  */
 .hover-zoom-frame {
   container-type: inline-size;
 }
 
 .hover-zoom {
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: scale(1) rotate(0.01deg);
   transform-origin: 0 0;
   transition: transform 600ms cubic-bezier(0.33, 1, 0.68, 1);
-  will-change: transform;
 }
 
 :is(.product-card, .group):hover .hover-zoom {
-  transform: translate3d(round(-2cqi, 1px), round(-2cqi, 1px), 0) scale(1.04);
+  transform: translate(round(-2cqi, 1px), round(-2cqi, 1px)) scale(1.04)
+    rotate(0.01deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

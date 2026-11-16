@@ -50,3 +50,16 @@ export const BIKE_SPECS = [
 export const BIKE_TAG = 'bike';
 export const LIMITED_TAG = 'limited-edition';
 export const BUILD_TIME = 'six weeks';
+
+/**
+ * Site navigation. Saqr sells two bikes, so the menu is curated here rather
+ * than read from the Shopify menus. Hash links point at homepage sections.
+ */
+export const NAV_LINKS = [
+  {label: 'S1', to: '/products/saqr-s1'},
+  {label: 'Shaheen', to: '/products/saqr-s1-shaheen'},
+  {label: 'Atelier', to: '/#atelier'},
+  {label: 'Accessories', to: '/#accessories'},
+];
+
+export const TEST_RIDE_LINK = {label: 'Book a test ride', to: '/#test-ride'};

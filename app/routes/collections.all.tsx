@@ -3,10 +3,11 @@ import {useLoaderData} from 'react-router';
 import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
+import {PageHeader} from '~/components/PageHeader';
 import type {CollectionItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Products`}];
+  return [{title: 'All products | Saqr'}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -51,11 +52,14 @@ export default function Collection() {
   const {products} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>Products</h1>
+    <div className="page">
+      <PageHeader eyebrow="Saqr" title="Everything we make">
+        <p>Two bikes and the few things worth carrying on them.</p>
+      </PageHeader>
       <PaginatedResourceSection<CollectionItemFragment>
         connection={products}
-        resourcesClassName="products-grid"
+        resourcesClassName="product-grid"
+        ariaLabel="All products"
       >
         {({node: product, index}) => (
           <ProductItem

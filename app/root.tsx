@@ -9,14 +9,16 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  Link,
 } from 'react-router';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
-import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
+import {PageHeader} from './components/PageHeader';
 
 export type RootLoader = typeof loader;
 
@@ -104,9 +106,6 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
   const [header] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
-      variables: {
-        headerMenuHandle: 'main-menu', // Adjust to your header menu handle
-      },
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
@@ -120,25 +119,11 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
 function loadDeferredData({context}: Route.LoaderArgs) {
-  const {storefront, customerAccount, cart} = context;
+  const {customerAccount, cart} = context;
 
-  // defer the footer query (below the fold)
-  const footer = storefront
-    .query(FOOTER_QUERY, {
-      cache: storefront.CacheLong(),
-      variables: {
-        footerMenuHandle: 'footer', // Adjust to your footer menu handle
-      },
-    })
-    .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
   return {
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
-    footer,
   };
 }
 
@@ -187,6 +172,7 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const data = useRouteLoaderData<RootLoader>('root');
   let errorMessage = 'Unknown error';
   let errorStatus = 500;
 
@@ -197,15 +183,43 @@ export function ErrorBoundary() {
     errorMessage = error.message;
   }
 
-  return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
-      {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
-      )}
+  const notFound = errorStatus === 404;
+  const content = (
+    <div className="page route-error">
+      <PageHeader
+        eyebrow={`Error ${errorStatus}`}
+        title={notFound ? 'Wrong turn.' : 'Something broke.'}
+      >
+        <p>
+          {notFound
+            ? 'This page does not exist, or it has moved. The bikes are still where you left them.'
+            : 'Something went wrong on our side. Try again in a moment.'}
+        </p>
+      </PageHeader>
+      <div className="route-error-actions">
+        <Link to="/" className="footer-cta">
+          Back to the homepage
+        </Link>
+        <Link to="/products/saqr-s1" className="route-error-link">
+          Configure an S1 <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+      {import.meta.env.DEV && errorMessage ? (
+        <pre className="route-error-detail">{errorMessage}</pre>
+      ) : null}
     </div>
+  );
+
+  // The root loader usually succeeded (a missing page is thrown further down),
+  // so the error can keep the site header and footer.
+  if (!data) return content;
+  return (
+    <Analytics.Provider
+      cart={data.cart}
+      shop={data.shop}
+      consent={data.consent}
+    >
+      <PageLayout {...data}>{content}</PageLayout>
+    </Analytics.Provider>
   );
 }

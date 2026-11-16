@@ -4,10 +4,14 @@ import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
+import {PageHeader} from '~/components/PageHeader';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+  return [
+    {title: `${data?.collection.title ?? 'Collection'} | Saqr`},
+    {name: 'description', content: data?.collection.description ?? ''},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -69,12 +73,14 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="page">
+      <PageHeader eyebrow="Collection" title={collection.title}>
+        {collection.description ? <p>{collection.description}</p> : null}
+      </PageHeader>
       <PaginatedResourceSection<ProductItemFragment>
         connection={collection.products}
-        resourcesClassName="products-grid"
+        resourcesClassName="product-grid"
+        ariaLabel={`${collection.title} products`}
       >
         {({node: product, index}) => (
           <ProductItem

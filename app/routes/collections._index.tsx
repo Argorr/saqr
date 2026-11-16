@@ -3,6 +3,7 @@ import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {PageHeader} from '~/components/PageHeader';
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -20,7 +21,7 @@ export async function loader(args: Route.LoaderArgs) {
  */
 async function loadCriticalData({context, request}: Route.LoaderArgs) {
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4,
+    pageBy: 12,
   });
 
   const [{collections}] = await Promise.all([
@@ -42,23 +43,29 @@ function loadDeferredData({context}: Route.LoaderArgs) {
   return {};
 }
 
+export const meta: Route.MetaFunction = () => [{title: 'Collections | Saqr'}];
+
 export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
+    <div className="page">
+      <PageHeader eyebrow="Saqr" title="Collections" />
       <PaginatedResourceSection<CollectionFragment>
         connection={collections}
-        resourcesClassName="collections-grid"
+        resourcesClassName="collection-grid"
+        ariaLabel="Collections"
       >
-        {({node: collection, index}) => (
-          <CollectionItem
-            key={collection.id}
-            collection={collection}
-            index={index}
-          />
-        )}
+        {({node: collection, index}) =>
+          // Shopify's default 'Home page' collection is not a real range.
+          collection.handle === 'frontpage' ? null : (
+            <CollectionItem
+              key={collection.id}
+              collection={collection}
+              index={index}
+            />
+          )
+        }
       </PaginatedResourceSection>
     </div>
   );
@@ -73,21 +80,23 @@ function CollectionItem({
 }) {
   return (
     <Link
-      className="collection-item"
-      key={collection.id}
+      className="collection-card"
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection?.image && (
+      {collection.image ? (
         <Image
           alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
+          aspectRatio="16/9"
           data={collection.image}
           loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
+          sizes="(min-width: 45em) 600px, 100vw"
         />
-      )}
-      <h5>{collection.title}</h5>
+      ) : null}
+      <h2 className="collection-card-title">{collection.title}</h2>
+      <span className="collection-card-link">
+        View the collection <span aria-hidden="true">→</span>
+      </span>
     </Link>
   );
 }

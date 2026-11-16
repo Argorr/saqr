@@ -30,6 +30,7 @@ const FACTS = [
 export function Atelier({detail}: {detail: HomeImageFragment | null}) {
   return (
     <section
+      id="atelier"
       className="home-section -mx-4 border-t border-line bg-ink-2 py-[clamp(5rem,12vw,9rem)]"
       aria-labelledby="atelier-title"
     >

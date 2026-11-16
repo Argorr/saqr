@@ -2,6 +2,7 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
+import {PageHeader} from '~/components/PageHeader';
 import {SearchResults} from '~/components/SearchResults';
 import {
   type RegularSearchReturn,
@@ -14,7 +15,7 @@ import type {
 } from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [{title: 'Search | Saqr'}];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
@@ -41,25 +42,32 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
+    <div className="page">
+      <PageHeader eyebrow="Search" title={term ? `“${term}”` : 'Find a Saqr'} />
+      <SearchForm className="search-form" role="search">
         {({inputRef}) => (
           <>
+            <label htmlFor="search-page-input" className="sr-only">
+              Search the shop
+            </label>
             <input
+              id="search-page-input"
               defaultValue={term}
               name="q"
-              placeholder="Search…"
+              placeholder="Bikes, accessories…"
               ref={inputRef}
               type="search"
             />
-            &nbsp;
             <button type="submit">Search</button>
           </>
         )}
       </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {!term || !result?.total ? (
+      {error && (
+        <p className="search-error" role="alert">
+          {error}
+        </p>
+      )}
+      {!term ? null : !result?.total ? (
         <SearchResults.Empty />
       ) : (
         <SearchResults result={result} term={term}>

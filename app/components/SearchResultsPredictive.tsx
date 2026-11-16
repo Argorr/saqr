@@ -228,7 +228,11 @@ function SearchResultsPredictiveProducts({
                 )}
                 <div>
                   <p>{product.title}</p>
-                  <small>{price && <Money data={price} />}</small>
+                  <small>
+                    {price && (
+                      <Money as="span" data={price} withoutTrailingZeros />
+                    )}
+                  </small>
                 </div>
               </Link>
             </li>

@@ -40,7 +40,7 @@ function SearchResultsArticles({
 
   return (
     <div className="search-result">
-      <h2>Articles</h2>
+      <h2 className="search-result-heading">Articles</h2>
       <div>
         {articles?.nodes?.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -58,7 +58,6 @@ function SearchResultsArticles({
           );
         })}
       </div>
-      <br />
     </div>
   );
 }
@@ -70,7 +69,7 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
 
   return (
     <div className="search-result">
-      <h2>Pages</h2>
+      <h2 className="search-result-heading">Pages</h2>
       <div>
         {pages?.nodes?.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -88,7 +87,6 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
           );
         })}
       </div>
-      <br />
     </div>
   );
 }
@@ -103,7 +101,7 @@ function SearchResultsProducts({
 
   return (
     <div className="search-result">
-      <h2>Products</h2>
+      <h2 className="search-result-heading">Products</h2>
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -117,17 +115,31 @@ function SearchResultsProducts({
             const image = product?.selectedOrFirstAvailableVariant?.image;
 
             return (
-              <div className="search-results-item" key={product.id}>
-                <Link prefetch="intent" to={productUrl}>
-                  {image && (
-                    <Image data={image} alt={product.title} width={50} />
-                  )}
-                  <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
-                  </div>
+              <li className="search-product" key={product.id}>
+                <Link
+                  className="search-product-link"
+                  prefetch="intent"
+                  to={productUrl}
+                >
+                  <span className="search-product-media">
+                    {image && (
+                      <Image
+                        data={image}
+                        alt=""
+                        aspectRatio="1/1"
+                        crop="center"
+                        width={96}
+                      />
+                    )}
+                  </span>
+                  <span className="search-product-title">{product.title}</span>
+                  <span className="search-product-price">
+                    {price && (
+                      <Money as="span" data={price} withoutTrailingZeros />
+                    )}
+                  </span>
                 </Link>
-              </div>
+              </li>
             );
           });
 
@@ -138,10 +150,7 @@ function SearchResultsProducts({
                   {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
                 </PreviousLink>
               </div>
-              <div>
-                {ItemsMarkup}
-                <br />
-              </div>
+              <ul className="search-products">{ItemsMarkup}</ul>
               <div>
                 <NextLink>
                   {isLoading ? 'Loading...' : <span>Load more ↓</span>}
@@ -151,11 +160,14 @@ function SearchResultsProducts({
           );
         }}
       </Pagination>
-      <br />
     </div>
   );
 }
 
 function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+  return (
+    <p className="search-empty">
+      Nothing found. Try “S1”, “Shaheen” or “leather”.
+    </p>
+  );
 }

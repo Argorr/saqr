@@ -8,6 +8,7 @@ export function Accessories({products}: {products: HomeAccessoryFragment[]}) {
   if (!products.length) return null;
   return (
     <section
+      id="accessories"
       className="home-section -mx-4 border-t border-line py-[clamp(5rem,12vw,9rem)]"
       aria-labelledby="accessories-title"
     >
@@ -43,7 +44,7 @@ export function Accessories({products}: {products: HomeAccessoryFragment[]}) {
                       aspectRatio="1/1"
                       sizes="(min-width: 64em) 400px, (min-width: 40em) 50vw, 100vw"
                       loading="lazy"
-                      className="h-full w-full !rounded-none object-cover transition-transform duration-700 ease-[var(--ease-dive)] group-hover:scale-[1.04]"
+                      className="h-full w-full !rounded-none object-cover [backface-visibility:hidden] transition-transform duration-700 will-change-transform ease-[var(--ease-dive)] group-hover:scale-[1.04]"
                     />
                   ) : null}
                 </div>

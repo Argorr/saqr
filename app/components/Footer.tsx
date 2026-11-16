@@ -1,129 +1,92 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
-import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {Link} from 'react-router';
+import {SaqrLogo} from '~/components/Header';
+import {TEST_RIDE_CITIES} from '~/components/home/TestRide';
+import {TEST_RIDE_LINK} from '~/lib/saqr';
 
-interface FooterProps {
-  footer: Promise<FooterQuery | null>;
-  header: HeaderQuery;
-  publicStoreDomain: string;
-}
+/**
+ * Site footer. Like the header, its links are curated in code: every one of
+ * them leads to a page or a homepage section that exists.
+ */
+const COLUMNS = [
+  {
+    title: 'Bikes',
+    links: [
+      {label: 'Saqr S1', to: '/products/saqr-s1'},
+      {label: 'S1 Shaheen', to: '/products/saqr-s1-shaheen'},
+      {label: 'Accessories', to: '/#accessories'},
+    ],
+  },
+  {
+    title: 'Saqr',
+    links: [
+      {label: 'The atelier', to: '/#atelier'},
+      {label: 'Test rides', to: TEST_RIDE_LINK.to},
+      {label: 'Press', to: '/#press'},
+    ],
+  },
+  {
+    title: 'Help',
+    links: [
+      {label: 'Your account', to: '/account'},
+      {label: 'Search', to: '/search'},
+      {label: 'Privacy policy', to: '/policies/privacy-policy'},
+    ],
+  },
+];
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
+export function Footer() {
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="footer">
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <Link to="/" className="footer-logo">
+            <SaqrLogo />
+          </Link>
+          <p className="footer-tagline">
+            Hand-built electric bikes for the city. Few of them, made well.
+          </p>
+          <Link to={TEST_RIDE_LINK.to} className="footer-cta">
+            {TEST_RIDE_LINK.label}
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+
+        <nav className="footer-columns" aria-label="Footer">
+          {COLUMNS.map((column) => (
+            <div key={column.title}>
+              <h2 className="footer-heading">{column.title}</h2>
+              <ul className="footer-links">
+                {column.links.map((link) => (
+                  <li key={link.to}>
+                    <Link
+                      to={link.to}
+                      prefetch={link.to.startsWith('/#') ? undefined : 'intent'}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div>
+            <h2 className="footer-heading">Showrooms</h2>
+            <ul className="footer-links footer-cities">
+              {TEST_RIDE_CITIES.map((city) => (
+                <li key={city}>{city}</li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div className="footer-bottom">
+        <p>© {new Date().getFullYear()} Saqr</p>
+        <p>
+          Saqr is a fictional brand, designed and built as a portfolio piece. No
+          bike will be shipped.
+        </p>
+      </div>
+    </footer>
   );
-}
-
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    color: isActive ? 'var(--color-sand)' : undefined,
-    opacity: isPending ? 0.6 : undefined,
-  };
 }

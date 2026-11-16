@@ -21,6 +21,7 @@ const QUOTES = [
 export function Press() {
   return (
     <section
+      id="press"
       className="home-section -mx-4 border-t border-line bg-ink-2 py-[clamp(4rem,10vw,7rem)]"
       aria-labelledby="press-title"
     >

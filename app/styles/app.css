@@ -840,3 +840,28 @@ button.header-icon.reset {
     stroke-dashoffset: 1;
   }
 }
+
+/*
+* --------------------------------------------------
+* components/ScrollSequence
+* --------------------------------------------------
+*/
+/* Captions only hide once the scrubbing script has marked them. */
+.sequence-caption[data-visible] {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 500ms var(--ease-dive),
+    transform 700ms var(--ease-dive);
+}
+
+.sequence-caption[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sequence-caption[data-visible] {
+    transform: none;
+  }
+}

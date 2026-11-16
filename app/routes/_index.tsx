@@ -10,6 +10,10 @@ import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
 import {HeroVideo} from '~/components/HeroVideo';
 import {BikeAnatomy} from '~/components/BikeAnatomy';
+import {
+  ScrollSequence,
+  type SequenceCaption,
+} from '~/components/ScrollSequence';
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -67,12 +71,37 @@ function loadDeferredData({context}: Route.LoaderArgs) {
   };
 }
 
+// Saqr S1 turntable film (AI-generated, see CREDITS.md).
+const SEQUENCE_CAPTIONS: SequenceCaption[] = [
+  {from: 0.05, to: 0.32, eyebrow: 'Saqr S1', title: 'Every angle, considered.'},
+  {
+    from: 0.38,
+    to: 0.64,
+    eyebrow: 'Nothing bolted on',
+    title: 'One line, end to end.',
+  },
+  {
+    from: 0.7,
+    to: 1,
+    eyebrow: 'Ready when you are',
+    title: 'Built for the city.',
+  },
+];
+
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="home">
       <HeroVideo />
       <BikeAnatomy />
+      <ScrollSequence
+        name="saqr-s1"
+        count={90}
+        captions={SEQUENCE_CAPTIONS}
+        headingId="sequence-title"
+        heading="Saqr S1 from every angle"
+        label="The Saqr S1 turning as you scroll"
+      />
       {data.isShopLinked ? null : <MockShopNotice />}
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />

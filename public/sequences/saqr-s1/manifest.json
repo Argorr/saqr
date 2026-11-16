@@ -1,0 +1,12 @@
+{
+  "name": "saqr-s1",
+  "count": 90,
+  "desktop": {
+    "width": 1280,
+    "height": 720
+  },
+  "mobile": {
+    "width": 720,
+    "height": 1280
+  }
+}

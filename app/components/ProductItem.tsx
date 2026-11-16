@@ -21,10 +21,11 @@ export function ProductItem({
     Number(maxVariantPrice.amount) > Number(minVariantPrice.amount);
   return (
     <Link className="product-card" prefetch="intent" to={variantUrl}>
-      <div className="product-card-media">
+      <div className="product-card-media hover-zoom-frame">
         {image ? (
           <Image
             alt={image.altText || product.title}
+            className="hover-zoom"
             aspectRatio="1/1"
             crop="center"
             data={image}

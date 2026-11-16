@@ -452,43 +452,6 @@ button.reset:hover:not(:has(> *)) {
 
 /*
 * --------------------------------------------------
-* routes/__index
-* --------------------------------------------------
-*/
-.featured-collection {
-  display: block;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-.featured-collection-image {
-  aspect-ratio: 1 / 1;
-  @media (min-width: 45em) {
-    aspect-ratio: 16 / 9;
-  }
-}
-
-.featured-collection img {
-  height: auto;
-  max-height: 100%;
-  object-fit: cover;
-}
-
-.recommended-products-grid {
-  display: grid;
-  grid-gap: 1.5rem;
-  grid-template-columns: repeat(2, 1fr);
-  @media (min-width: 45em) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.recommended-product img {
-  height: auto;
-}
-
-/*
-* --------------------------------------------------
 * routes/collections._index.tsx
 * --------------------------------------------------
 */
@@ -839,4 +802,36 @@ button.header-icon.reset {
   .anatomy-bike.is-pending :is(path, circle) {
     stroke-dashoffset: 1;
   }
+}
+
+/*
+* --------------------------------------------------
+* components/home/TestRide
+* --------------------------------------------------
+*/
+.test-ride-input {
+  width: 100%;
+  min-height: 3rem;
+  margin: 0;
+  padding: 0 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  background: var(--color-ink-2);
+  color: var(--color-sand);
+  font: inherit;
+  transition: border-color 200ms;
+}
+
+.test-ride-input:hover {
+  border-color: var(--color-sand-muted);
+}
+
+.test-ride-input:focus-visible {
+  border-color: var(--color-copper);
+  outline: 2px solid var(--color-copper);
+  outline-offset: 2px;
+}
+
+.test-ride-input[aria-invalid='true'] {
+  border-color: var(--color-copper-strong);
 }

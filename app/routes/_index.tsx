@@ -1,170 +1,103 @@
-import {Await, useLoaderData, Link} from 'react-router';
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
-import {Suspense} from 'react';
-import {Image} from '@shopify/hydrogen';
-import type {
-  FeaturedCollectionFragment,
-  RecommendedProductsQuery,
-} from 'storefrontapi.generated';
-import {ProductItem} from '~/components/ProductItem';
-import {MockShopNotice} from '~/components/MockShopNotice';
 import {HeroVideo} from '~/components/HeroVideo';
 import {BikeAnatomy} from '~/components/BikeAnatomy';
 import {TurntableVideo} from '~/components/TurntableVideo';
+import {FinishSelector} from '~/components/home/FinishSelector';
+import {Atelier} from '~/components/home/Atelier';
+import {LimitedEdition} from '~/components/home/LimitedEdition';
+import {Accessories} from '~/components/home/Accessories';
+import {Press} from '~/components/home/Press';
+import {TestRide, testRideAction} from '~/components/home/TestRide';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Saqr | Urban electric bikes'},
+    {title: 'Saqr | Hand-built electric bikes for the city'},
     {
       name: 'description',
       content:
-        'Saqr designs light, quiet electric bikes for the city. Explore the range.',
+        'Saqr S1: a quiet, hand-built electric bike drawn as one unbroken line. Three finishes, a limited series of 99, private test rides.',
     },
   ];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context}: Route.LoaderArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+export async function loader({context}: Route.LoaderArgs) {
+  const {s1, shaheen, accessories} = await context.storefront.query(
+    HOME_QUERY,
+    {cache: context.storefront.CacheShort()},
+  );
+  // The copper photo makes the warmest close-up for the atelier section.
+  const detail =
+    s1?.variants.nodes.find((variant) =>
+      variant.selectedOptions.some(
+        (o) => o.name === 'Finish' && o.value === 'Copper',
+      ),
+    )?.image ?? null;
 
   return {
-    isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
-    featuredCollection: collections.nodes[0],
+    s1,
+    shaheen,
+    detail,
+    accessories: accessories?.products.nodes ?? [],
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
-    .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
-
-  return {
-    recommendedProducts,
-  };
+export async function action({request}: Route.ActionArgs) {
+  const form = await request.formData();
+  if (form.get('intent') === 'test-ride') return testRideAction(form);
+  throw new Response('Unknown form', {status: 400});
 }
 
 export default function Homepage() {
-  const data = useLoaderData<typeof loader>();
+  const {s1, shaheen, detail, accessories} = useLoaderData<typeof loader>();
   return (
     <div className="home">
       <HeroVideo />
       <BikeAnatomy />
       <TurntableVideo />
-      {data.isShopLinked ? null : <MockShopNotice />}
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      {s1 ? <FinishSelector product={s1} /> : null}
+      <Atelier detail={detail} />
+      {shaheen ? <LimitedEdition product={shaheen} /> : null}
+      <Accessories products={accessories} />
+      <Press />
+      <TestRide />
     </div>
   );
 }
 
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
-  const image = collection?.image;
-  return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image
-            data={image}
-            sizes="100vw"
-            alt={image.altText || collection.title}
-          />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
-  );
-}
-
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
-  return (
-    <section
-      className="recommended-products"
-      aria-labelledby="recommended-products"
-    >
-      <h2 id="recommended-products">Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
-                : null}
-            </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
-    </section>
-  );
-}
-
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
+const HOME_QUERY = `#graphql
+  fragment HomeImage on Image {
     id
-    title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-    handle
+    url
+    altText
+    width
+    height
   }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
+  fragment HomeS1 on Product {
+    id
+    handle
+    variants(first: 50) {
       nodes {
-        ...FeaturedCollection
+        id
+        selectedOptions {
+          name
+          value
+        }
+        price {
+          amount
+          currencyCode
+        }
+        image {
+          ...HomeImage
+        }
       }
     }
   }
-` as const;
-
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
+  fragment HomeShaheen on Product {
     id
-    title
     handle
+    title
+    availableForSale
     priceRange {
       minVariantPrice {
         amount
@@ -172,18 +105,42 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
       }
     }
     featuredImage {
-      id
-      url
-      altText
-      width
-      height
+      ...HomeImage
+    }
+    variants(first: 10) {
+      nodes {
+        id
+        quantityAvailable
+      }
     }
   }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
+  fragment HomeAccessory on Product {
+    id
+    handle
+    title
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    featuredImage {
+      ...HomeImage
+    }
+  }
+  query Home($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...RecommendedProduct
+    s1: product(handle: "saqr-s1") {
+      ...HomeS1
+    }
+    shaheen: product(handle: "saqr-s1-shaheen") {
+      ...HomeShaheen
+    }
+    accessories: collection(handle: "accessories") {
+      products(first: 6) {
+        nodes {
+          ...HomeAccessory
+        }
       }
     }
   }

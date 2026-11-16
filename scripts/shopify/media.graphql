@@ -1,0 +1,16 @@
+mutation AddMedia($product: ProductUpdateInput!, $media: [CreateMediaInput!]) {
+  productUpdate(product: $product, media: $media) {
+    product {
+      id
+      media(first: 3) {
+        nodes {
+          status
+        }
+      }
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}

@@ -1,0 +1,15 @@
+mutation CreateProduct($input: ProductSetInput!) {
+  productSet(synchronous: true, input: $input) {
+    product {
+      id
+      handle
+      variantsCount {
+        count
+      }
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}

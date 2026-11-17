@@ -12,7 +12,10 @@
  *   --crop w:h:x:y   crop the source first (e.g. to cut a watermark)
  *   --fade 0.6       cross-fade length in seconds
  *   --width 1280     desktop width (a 720-wide copy is made for phones)
- *   --crf 26         H.264 quality (lower = better and heavier)
+ *   --crf 20         H.264 quality (lower = better and heavier)
+ *
+ * Frames are scaled with Lanczos, lightly denoised (the generator's shimmer
+ * costs bits and shows as blocks on the black background) and re-sharpened.
  *
  * Writes public/videos/<name>-{1280,720}.mp4 and <name>-poster.jpg.
  */
@@ -27,7 +30,7 @@ if (!input || !name) {
   );
   process.exit(1);
 }
-const opts = {crop: '', fade: 0.6, width: 1280, crf: 26};
+const opts = {crop: '', fade: 0.6, width: 1280, crf: 20};
 for (let i = 0; i < rest.length; i += 2) {
   const key = rest[i].replace(/^--/, '');
   if (!(key in opts)) throw new Error(`Unknown option --${key}`);
@@ -55,11 +58,12 @@ function probe(file) {
 const {duration, fps} = probe(input);
 const fade = opts.fade;
 const crop = opts.crop ? `crop=${opts.crop},` : '';
+const CLEAN = 'hqdn3d=1.5:1.5:3:3,unsharp=5:5:0.6';
 const out = (suffix) => path.join('public', 'videos', `${name}-${suffix}`);
 
 function encode(width, file) {
   const filter = [
-    `[0:v]${crop}scale=${width}:-2,setsar=1,fps=${fps},settb=AVTB,split[a][b]`,
+    `[0:v]${crop}scale=${width}:-2:flags=lanczos,${CLEAN},setsar=1,fps=${fps},settb=AVTB,split[a][b]`,
     `[a]trim=start=${fade},setpts=PTS-STARTPTS[main]`,
     `[b]trim=end=${fade},setpts=PTS-STARTPTS[head]`,
     `[main][head]xfade=transition=fade:duration=${fade}:offset=${(duration - 2 * fade).toFixed(3)},format=yuv420p[v]`,
@@ -67,7 +71,7 @@ function encode(width, file) {
   execFileSync(ffmpeg, [
     ...['-hide_banner', '-v', 'error', '-y', '-i', input],
     ...['-filter_complex', filter, '-map', '[v]', '-an'],
-    ...['-c:v', 'libx264', '-preset', 'slow', '-crf', String(opts.crf)],
+    ...['-c:v', 'libx264', '-preset', 'slower', '-tune', 'film', '-crf', String(opts.crf)],
     ...['-movflags', '+faststart', file],
   ]);
   console.log(`${file}: ${(statSync(file).size / 1e6).toFixed(2)} MB`);
@@ -78,7 +82,7 @@ encode(720, out('720.mp4'));
 // Poster: the frame the loop starts on.
 execFileSync(ffmpeg, [
   ...['-hide_banner', '-v', 'error', '-y', '-ss', String(fade), '-i', input],
-  ...['-frames:v', '1', '-vf', `${crop}scale=${opts.width}:-2`, '-q:v', '4'],
+  ...['-frames:v', '1', '-vf', `${crop}scale=${opts.width}:-2:flags=lanczos,${CLEAN}`, '-q:v', '3'],
   out('poster.jpg'),
 ]);
 console.log(`${out('poster.jpg')}: done`);

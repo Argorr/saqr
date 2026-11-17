@@ -36,7 +36,7 @@ export function CartLineItem({
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="cart-line">
+    <li className="cart-line">
       <div className="cart-line-inner">
         {image && (
           <Image
@@ -63,7 +63,18 @@ export function CartLineItem({
               <strong>{product.title}</strong>
             </p>
           </Link>
-          <ProductPrice price={line?.cost?.totalAmount} />
+          {/* Optimistic lines have no cost yet: show the variant price
+              meanwhile, so the price does not pop in a moment later. */}
+          <ProductPrice
+            price={
+              line.cost?.totalAmount ?? {
+                amount: String(
+                  Number(merchandise.price.amount) * (line.quantity || 1),
+                ),
+                currencyCode: merchandise.price.currencyCode,
+              }
+            }
+          />
           <ul>
             {selectedOptions
               .filter((option) => option.value !== 'Default Title')

@@ -84,7 +84,8 @@ export function FinishSelector({product}: {product: HomeS1Fragment}) {
         />
 
         <div className="mt-[clamp(2.5rem,6vw,4.5rem)] grid items-center gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-sm bg-ink">
+          {/* The finish photos are 43:24 (1376 x 768); the frame matches so none is cropped. */}
+          <div className="relative aspect-[43/24] overflow-hidden rounded-sm bg-ink">
             {finishes.map((finish, i) => (
               <Image
                 key={finish.name}

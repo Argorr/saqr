@@ -33,6 +33,25 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
   return children;
 }
 /**
+ * Keys that survive the swap from the optimistic line (a temporary id, shown
+ * the moment "Add" is clicked) to the line Shopify returns. Keyed by line id,
+ * React would remount the line and reload its photo: the cart would flicker.
+ * The variant id, plus a counter for repeated variants (two Shaheens with
+ * different serial numbers), stays the same across the swap.
+ */
+function stableLineKeys(lines: CartLine[]) {
+  const seen = new Map<string, number>();
+  const keys = new Map<CartLine, string>();
+  for (const line of lines) {
+    const id = line.merchandise.id;
+    const count = seen.get(id) ?? 0;
+    seen.set(id, count + 1);
+    keys.set(line, `${id}#${count}`);
+  }
+  return keys;
+}
+
+/**
  * The main cart component that displays the cart items and summary.
  * It is used by both the /cart route and the cart aside dialog.
  */
@@ -48,6 +67,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
+  const lineKeys = stableLineKeys(cart?.lines?.nodes ?? []);
 
   return (
     <section
@@ -71,7 +91,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
               }
               return (
                 <CartLineItem
-                  key={line.id}
+                  key={lineKeys.get(line)}
                   line={line}
                   layout={layout}
                   childrenMap={childrenMap}

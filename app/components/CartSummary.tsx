@@ -17,19 +17,14 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const discountCodeInputId = useId();
   const giftCardHeadingId = useId();
   const giftCardInputId = useId();
+  const subtotal = cart?.cost?.subtotalAmount ?? optimisticSubtotal(cart);
 
   return (
     <div aria-labelledby={summaryId} className={className}>
       <h4 id={summaryId}>Totals</h4>
       <dl role="group" className="cart-subtotal">
         <dt>Subtotal</dt>
-        <dd>
-          {cart?.cost?.subtotalAmount?.amount ? (
-            <Money data={cart?.cost?.subtotalAmount} />
-          ) : (
-            '-'
-          )}
-        </dd>
+        <dd>{subtotal ? <Money data={subtotal} /> : '-'}</dd>
       </dl>
       <CartDiscounts
         discountCodes={cart?.discountCodes}
@@ -46,14 +41,35 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   );
 }
 
-function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
-  if (!checkoutUrl) return null;
+/**
+ * While the first line of an empty cart is on its way, Shopify has not sent
+ * totals yet: add up the variant prices so the subtotal is there at once.
+ */
+function optimisticSubtotal(cart: CartSummaryProps['cart']) {
+  const lines = cart?.lines?.nodes ?? [];
+  const first = lines[0]?.merchandise.price;
+  if (!first) return null;
+  const amount = lines.reduce(
+    (sum, line) =>
+      sum + Number(line.merchandise.price.amount) * (line.quantity || 1),
+    0,
+  );
+  return {amount: String(amount), currencyCode: first.currencyCode};
+}
 
+/** The checkout link keeps its place while the cart is being created. */
+function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   return (
     <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
-      </a>
+      {checkoutUrl ? (
+        <a href={checkoutUrl} target="_self">
+          <p>Continue to Checkout &rarr;</p>
+        </a>
+      ) : (
+        <p aria-hidden="true" className="opacity-50">
+          Continue to Checkout &rarr;
+        </p>
+      )}
       <br />
     </div>
   );

@@ -94,7 +94,11 @@ export function HeroVideo() {
         }}
         onPause={() => setPlaying(false)}
       >
-        <source src={MEDIA.portrait.video} type="video/mp4" media={PORTRAIT_QUERY} />
+        <source
+          src={MEDIA.portrait.video}
+          type="video/mp4"
+          media={PORTRAIT_QUERY}
+        />
         <source src={MEDIA.landscape.video} type="video/mp4" />
       </video>
 
@@ -127,7 +131,7 @@ export function HeroVideo() {
           <Link
             to="/collections/all"
             prefetch="intent"
-            className="inline-flex min-h-12 items-center gap-3 rounded-full bg-copper px-7 text-sm font-semibold tracking-wide text-ink transition-colors duration-300 hover:bg-copper-strong hover:no-underline"
+            className="inline-flex min-h-12 items-center gap-3 rounded-full bg-copper px-7 text-sm font-semibold tracking-wide text-ink relative fade-hover [--hover-bg:var(--color-copper-strong)] hover:no-underline"
           >
             Explore the bikes
             <span aria-hidden="true">→</span>
@@ -142,7 +146,7 @@ export function HeroVideo() {
           <button
             type="button"
             onClick={togglePlayback}
-            className="ms-auto grid size-11 shrink-0 place-items-center rounded-full border border-sand/30 text-sand backdrop-blur-sm transition-colors hover:border-sand hover:bg-sand/10"
+            className="ms-auto grid size-11 shrink-0 place-items-center rounded-full border border-sand/30 text-sand backdrop-blur-sm relative fade-hover [--hover-bg:rgb(236_227_210/0.1)] [--hover-border:var(--color-sand)]"
             aria-label={
               playing ? 'Pause background video' : 'Play background video'
             }
@@ -151,7 +155,6 @@ export function HeroVideo() {
           </button>
         </div>
       </div>
-
     </section>
   );
 }
@@ -168,7 +171,10 @@ function PauseIcon() {
 function PlayIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-      <path d="M3 1.5v11a.6.6 0 0 0 .9.5l9-5.5a.6.6 0 0 0 0-1l-9-5.5a.6.6 0 0 0-.9.5Z" fill="currentColor" />
+      <path
+        d="M3 1.5v11a.6.6 0 0 0 .9.5l9-5.5a.6.6 0 0 0 0-1l-9-5.5a.6.6 0 0 0-.9.5Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }

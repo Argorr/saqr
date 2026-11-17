@@ -114,7 +114,7 @@ export function TurntableVideo() {
         <button
           type="button"
           onClick={togglePlayback}
-          className="absolute right-[clamp(1rem,4vw,3.5rem)] bottom-[clamp(1rem,4vw,3rem)] grid size-11 place-items-center rounded-full border border-sand/30 text-sand backdrop-blur-sm transition-colors hover:border-sand hover:bg-sand/10"
+          className="absolute right-[clamp(1rem,4vw,3.5rem)] bottom-[clamp(1rem,4vw,3rem)] grid size-11 place-items-center rounded-full border border-sand/30 text-sand backdrop-blur-sm fade-hover [--hover-bg:rgb(236_227_210/0.1)] [--hover-border:var(--color-sand)]"
           aria-label={playing ? 'Pause the bike video' : 'Play the bike video'}
         >
           {playing ? <PauseIcon /> : <PlayIcon />}

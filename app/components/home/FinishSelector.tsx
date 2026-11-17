@@ -156,7 +156,7 @@ export function FinishSelector({product}: {product: HomeS1Fragment}) {
             <Link
               to={`/products/${product.handle}?${current.query}`}
               prefetch="intent"
-              className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-full bg-copper px-7 text-sm font-semibold tracking-wide text-ink transition-colors duration-300 hover:bg-copper-strong hover:no-underline"
+              className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-full bg-copper px-7 text-sm font-semibold tracking-wide text-ink relative fade-hover [--hover-bg:var(--color-copper-strong)] hover:no-underline"
             >
               Configure your S1
               <span aria-hidden="true">→</span>

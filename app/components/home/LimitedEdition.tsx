@@ -111,7 +111,7 @@ export function LimitedEdition({product}: {product: HomeShaheenFragment}) {
             to={to}
             prefetch="intent"
             viewTransition
-            className="inline-flex min-h-12 items-center gap-3 rounded-full border border-sand/40 px-7 text-sm font-semibold tracking-wide text-sand transition-colors duration-300 hover:border-sand hover:bg-sand/10 hover:no-underline"
+            className="inline-flex min-h-12 items-center gap-3 rounded-full border border-sand/40 px-7 text-sm font-semibold tracking-wide text-sand relative fade-hover [--hover-bg:rgb(236_227_210/0.1)] [--hover-border:var(--color-sand)] hover:no-underline"
           >
             {soldOut ? 'See the Shaheen' : 'Reserve a number'}
             <span aria-hidden="true">→</span>

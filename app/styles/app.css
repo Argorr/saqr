@@ -359,7 +359,7 @@ button.reset:hover:not(:has(> *)) {
   min-height: 3rem;
   padding-inline: 1.75rem;
   text-decoration: none;
-  transition: background-color 300ms var(--ease-dive);
+  --hover-bg: var(--color-copper-strong);
 }
 
 .header-menu-cta {
@@ -368,7 +368,6 @@ button.reset:hover:not(:has(> *)) {
 
 .header-menu-cta:hover,
 .footer-cta:hover {
-  background: var(--color-copper-strong);
   text-decoration: none;
 }
 
@@ -383,17 +382,14 @@ button.reset:hover:not(:has(> *)) {
   margin-inline-end: 0.75rem;
   padding: 0.55rem 1.1rem;
   text-decoration: none;
-  transition:
-    border-color 300ms var(--ease-dive),
-    background-color 300ms var(--ease-dive);
+  --hover-bg: rgb(236 227 210 / 0.08);
+  --hover-border: var(--color-sand);
   @media (min-width: 60em) {
     display: inline-flex;
   }
 }
 
 .header-test-ride:hover {
-  background: rgb(236 227 210 / 0.08);
-  border-color: var(--color-sand);
   text-decoration: none;
 }
 
@@ -983,14 +979,11 @@ button.reset:hover:not(:has(> *)) {
   min-height: 3rem;
   padding-inline: 1.75rem;
   text-decoration: none;
-  transition:
-    background-color 300ms,
-    border-color 300ms;
+  --hover-bg: rgb(236 227 210 / 0.08);
+  --hover-border: var(--color-sand);
 }
 
 .bike-chapter-cta:hover {
-  background: rgb(236 227 210 / 0.08);
-  border-color: var(--color-sand);
   text-decoration: none;
 }
 
@@ -1079,11 +1072,7 @@ button.reset:hover:not(:has(> *)) {
   font-weight: 700;
   min-height: 3rem;
   padding: 0 1.75rem;
-  transition: background-color 300ms var(--ease-dive);
-}
-
-.search-form button:hover {
-  background: var(--color-copper-strong);
+  --hover-bg: var(--color-copper-strong);
 }
 
 .search-error,
@@ -1370,26 +1359,7 @@ label.configurator-card:has(:focus-visible) {
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
-  /* The hover colour is a layer that fades in, not a background-color
-     transition: Firefox repainted the rounded ends badly for a frame while
-     the colour changed. An opacity fade is composited, nothing is redrawn. */
-  isolation: isolate;
-  position: relative;
-}
-
-.configurator-submit::before {
-  background: var(--color-copper-strong);
-  border-radius: inherit;
-  content: '';
-  inset: 0;
-  opacity: 0;
-  position: absolute;
-  transition: opacity 300ms;
-  z-index: -1;
-}
-
-.configurator-submit:hover:not(:disabled)::before {
-  opacity: 1;
+  --hover-bg: var(--color-copper-strong);
 }
 
 .configurator-submit:disabled {
@@ -1615,15 +1585,12 @@ article:has(.journal-media:hover) .journal-title a {
   justify-content: center;
   min-height: 3rem;
   padding: 0 1.75rem;
-  transition:
-    background-color 300ms var(--ease-dive),
-    border-color 300ms var(--ease-dive),
-    color 300ms var(--ease-dive);
+  transition: color 300ms var(--ease-dive);
+  --hover-bg: var(--color-copper-strong);
+  --hover-border: var(--color-copper-strong);
 }
 
 .button:hover:not(:disabled) {
-  background: var(--color-copper-strong);
-  border-color: var(--color-copper-strong);
   text-decoration: none;
 }
 
@@ -1631,11 +1598,11 @@ article:has(.journal-media:hover) .journal-title a {
   background: transparent;
   border-color: var(--color-line);
   color: var(--color-sand);
+  --hover-bg: transparent;
+  --hover-border: var(--color-copper);
 }
 
 .button-ghost:hover:not(:disabled) {
-  background: transparent;
-  border-color: var(--color-copper);
   color: var(--color-copper);
 }
 
@@ -2336,4 +2303,69 @@ input:disabled + .serial-cell {
   font-family: var(--font-serif);
   font-size: 1rem;
   font-style: italic;
+}
+
+/*
+ * Rounded buttons: the hover colour is a layer that fades in (opacity), never
+ * a background-color or border-color transition. While those animate,
+ * Firefox redraws the rounded shape every frame and now and then drops its
+ * rounded ends for a frame; an opacity fade is composited, nothing is redrawn.
+ * Each button sets --hover-bg and, if it has a border, --hover-border.
+ * Tailwind-styled buttons opt in with the `fade-hover` class.
+ */
+/* `.fade-hover` (Tailwind buttons) takes its position from its own classes
+   (`relative` or `absolute`), so only isolation is set for it here. */
+.fade-hover {
+  isolation: isolate;
+}
+
+:is(
+  .configurator-submit,
+  .header-menu-cta,
+  .footer-cta,
+  .header-test-ride,
+  .bike-chapter-cta,
+  .search-form button,
+  .button
+) {
+  isolation: isolate;
+  position: relative;
+}
+
+:is(
+  .fade-hover,
+  .configurator-submit,
+  .header-menu-cta,
+  .footer-cta,
+  .header-test-ride,
+  .bike-chapter-cta,
+  .search-form button,
+  .button
+)::before {
+  background: var(--hover-bg, transparent);
+  background-clip: padding-box;
+  border: 1px solid var(--hover-border, transparent);
+  border-radius: inherit;
+  content: '';
+  /* -1px: the layer's border lies exactly over the button's own border
+     (or its edge, for borderless buttons). */
+  inset: -1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 300ms var(--ease-dive);
+  z-index: -1;
+}
+
+:is(
+    .fade-hover,
+    .configurator-submit,
+    .header-menu-cta,
+    .footer-cta,
+    .header-test-ride,
+    .bike-chapter-cta,
+    .search-form button,
+    .button
+  ):hover:not(:disabled)::before {
+  opacity: 1;
 }

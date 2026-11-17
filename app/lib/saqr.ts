@@ -95,3 +95,15 @@ export function journalTopic(tags: string[]) {
   const key = Object.keys(JOURNAL_TOPICS).find((t) => tags.includes(t));
   return key ? JOURNAL_TOPICS[key] : null;
 }
+
+/**
+ * Atelier section photo, stored in Shopify Files (not tied to a product).
+ * Source: design/products/atelier-drive.jpg, prompt in PROMPTS.md (7 B).
+ */
+export const ATELIER_PHOTO = {
+  url: 'https://cdn.shopify.com/s/files/1/0973/7093/1466/files/atelier-drive.jpg?v=1794906700',
+  width: 928,
+  height: 1152,
+  altText:
+    'A mechanic’s hands working on the motor of a copper Saqr S1 in the atelier',
+};

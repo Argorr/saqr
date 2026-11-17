@@ -1,10 +1,10 @@
 import {Image} from '@shopify/hydrogen';
-import type {HomeImageFragment} from 'storefrontapi.generated';
+import {ATELIER_PHOTO} from '~/lib/saqr';
 import {SectionIntro} from './SectionIntro';
 
 /**
- * How an S1 is made: an editorial block with a close-up of the drive.
- * The close-up is the product photo, cropped on the motor.
+ * How an S1 is made: an editorial block with a close-up of a mechanic
+ * working on the drive (a dedicated 4:5 photo, shown uncropped).
  */
 const FACTS = [
   {
@@ -27,7 +27,7 @@ const FACTS = [
   },
 ];
 
-export function Atelier({detail}: {detail: HomeImageFragment | null}) {
+export function Atelier() {
   return (
     <section
       id="atelier"
@@ -69,22 +69,19 @@ export function Atelier({detail}: {detail: HomeImageFragment | null}) {
           </dl>
         </div>
 
-        {detail ? (
-          <figure className="!m-0">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-ink">
-              <Image
-                data={detail}
-                alt="Close-up of the S1 mid-drive motor and crank"
-                sizes="1400px"
-                loading="lazy"
-                className="absolute inset-0 h-full w-full !rounded-none object-cover object-[48%_62%] [transform:scale(1.6)] [transform-origin:48%_62%]"
-              />
-            </div>
-            <figcaption className="mt-3 text-xs tracking-[0.15em] text-sand-muted uppercase">
-              85 Nm mid-drive, sealed inside the frame
-            </figcaption>
-          </figure>
-        ) : null}
+        <figure className="!m-0">
+          <div className="aspect-[4/5] overflow-hidden rounded-sm bg-ink">
+            <Image
+              data={ATELIER_PHOTO}
+              sizes="(min-width: 64em) 560px, 100vw"
+              loading="lazy"
+              className="block h-full w-full !rounded-none object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-xs tracking-[0.15em] text-sand-muted uppercase">
+            Every bolt torqued by hand
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

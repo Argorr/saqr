@@ -26,18 +26,9 @@ export async function loader({context}: Route.LoaderArgs) {
     HOME_QUERY,
     {cache: context.storefront.CacheShort()},
   );
-  // The copper photo makes the warmest close-up for the atelier section.
-  const detail =
-    s1?.variants.nodes.find((variant) =>
-      variant.selectedOptions.some(
-        (o) => o.name === 'Finish' && o.value === 'Copper',
-      ),
-    )?.image ?? null;
-
   return {
     s1,
     shaheen,
-    detail,
     accessories: accessories?.products.nodes ?? [],
   };
 }
@@ -49,14 +40,14 @@ export async function action({request}: Route.ActionArgs) {
 }
 
 export default function Homepage() {
-  const {s1, shaheen, detail, accessories} = useLoaderData<typeof loader>();
+  const {s1, shaheen, accessories} = useLoaderData<typeof loader>();
   return (
     <div className="home">
       <HeroVideo />
       <BikeAnatomy />
       <TurntableVideo />
       {s1 ? <FinishSelector product={s1} /> : null}
-      <Atelier detail={detail} />
+      <Atelier />
       {shaheen ? <LimitedEdition product={shaheen} /> : null}
       <Accessories products={accessories} />
       <Press />

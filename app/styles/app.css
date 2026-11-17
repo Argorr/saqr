@@ -993,6 +993,25 @@ button.reset:hover:not(:has(> *)) {
   margin: 3rem 0 1rem;
 }
 
+.prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.prose ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.625rem;
+  padding-left: 0.25rem;
+}
+
+.prose li::marker {
+  color: var(--color-copper);
+}
+
 .prose strong {
   color: var(--color-sand);
 }

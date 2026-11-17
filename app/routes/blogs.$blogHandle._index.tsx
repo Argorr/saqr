@@ -145,6 +145,8 @@ const BLOGS_QUERY = `#graphql
         description
       }
       articles(
+        sortKey: PUBLISHED_AT,
+        reverse: true,
         first: $first,
         last: $last,
         before: $startCursor,

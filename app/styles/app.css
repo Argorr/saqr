@@ -445,7 +445,10 @@ button.reset:hover:not(:has(> *)) {
 
 .footer-tagline {
   color: var(--color-sand-muted);
-  line-height: 1.6;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1.4;
   margin: 1.5rem 0 2rem;
   max-width: 32ch;
 }
@@ -1272,8 +1275,9 @@ article:has(.journal-media:hover) .journal-title a {
 
 .journal-excerpt {
   color: rgb(236 227 210 / 0.8);
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  font-family: var(--font-serif);
+  font-size: 1.3125rem;
+  line-height: 1.45;
   margin: 0 0 1rem;
   max-width: 52ch;
 }
@@ -1948,4 +1952,163 @@ button.header-icon.reset {
 
 .test-ride-input[aria-invalid='true'] {
   border-color: var(--color-copper-strong);
+}
+
+/*
+* --------------------------------------------------
+* Finishing touches: grain, serif accents, page
+* transitions, logo intro, Shaheen serial numbers
+* --------------------------------------------------
+*/
+
+/* A fine film grain over the whole page, so the blacks read as material
+   rather than screen. A static tiled PNG at low opacity: no blend mode,
+   nothing animated, cheap to composite (Firefox included). */
+body::after {
+  background: url('/textures/grain.png') repeat;
+  background-size: 256px 256px;
+  content: '';
+  inset: 0;
+  opacity: 0.045;
+  pointer-events: none;
+  position: fixed;
+  z-index: 100;
+}
+
+/* Page transitions: the product photo flies from its card to the product
+   page (view-transition-name set in ProductItem / Accessories / Stage). */
+::view-transition-group(*) {
+  animation-duration: 550ms;
+  animation-timing-function: var(--ease-dive);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Logo intro, once per visit (root.tsx sets data-intro on <html>):
+   the band draws in, the letters rise, then the two copper dots of the
+   qaf drop into place like a falcon's stoop. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-intro] .header-logo .logo-band {
+    animation: logo-band 800ms var(--ease-dive) both;
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+
+  [data-intro] .header-logo .logo-letters {
+    animation: logo-letters 900ms var(--ease-dive) 150ms both;
+  }
+
+  [data-intro] .header-logo .logo-dots {
+    animation: logo-dots 650ms cubic-bezier(0.5, 0, 0.2, 1.35) 750ms both;
+  }
+}
+
+@keyframes logo-band {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes logo-letters {
+  from {
+    opacity: 0;
+    /* SVG user units: the logo is drawn ~5x smaller, so this is ~12px. */
+    transform: translateY(60px);
+  }
+}
+
+@keyframes logo-dots {
+  from {
+    opacity: 0;
+    transform: translateY(-140px);
+  }
+}
+
+/* Shaheen serial numbers: a register of the 99 bikes. */
+.serial-grid {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+}
+
+.serial-cell {
+  align-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  color: var(--color-sand);
+  display: flex;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  height: 2.25rem;
+  justify-content: center;
+  transition:
+    border-color 200ms,
+    background-color 200ms,
+    color 200ms;
+}
+
+label:hover > .serial-cell {
+  border-color: var(--color-sand-muted);
+}
+
+input:checked + .serial-cell {
+  background: rgb(226 118 58 / 0.12);
+  border-color: var(--color-copper);
+  color: var(--color-copper-strong);
+}
+
+input:focus-visible + .serial-cell {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 2px;
+}
+
+input:disabled + .serial-cell {
+  border-color: transparent;
+  color: rgb(169 162 148 / 0.35);
+  text-decoration: line-through;
+}
+
+/* The promise under the reserve button: copper diamonds echo the logo. */
+.promise-list {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.promise-list li {
+  align-items: baseline;
+  color: var(--color-sand-muted);
+  display: flex;
+  font-size: 0.875rem;
+  gap: 0.75rem;
+  line-height: 1.5;
+}
+
+.promise-list li::before {
+  background: var(--color-copper);
+  content: '';
+  flex: none;
+  height: 6px;
+  transform: translateY(-2px) rotate(45deg);
+  width: 6px;
+}
+
+.cart-line-serial {
+  color: var(--color-copper-strong);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
 }

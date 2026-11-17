@@ -5,6 +5,7 @@ import type {
   CollectionItemFragment,
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
+import {useCardTransition} from '~/lib/transitions';
 
 /** Product card for the collection grids, styled like the homepage accessories. */
 export function ProductItem({
@@ -15,13 +16,19 @@ export function ProductItem({
   loading?: 'eager' | 'lazy';
 }) {
   const variantUrl = useVariantUrl(product.handle);
+  const transition = useCardTransition(variantUrl, product.handle);
   const image = product.featuredImage;
   const {minVariantPrice, maxVariantPrice} = product.priceRange;
   const fromPrice =
     Number(maxVariantPrice.amount) > Number(minVariantPrice.amount);
   return (
-    <Link className="product-card" prefetch="intent" to={variantUrl}>
-      <div className="product-card-media hover-zoom-frame">
+    <Link
+      className="product-card"
+      prefetch="intent"
+      to={variantUrl}
+      viewTransition
+    >
+      <div className="product-card-media hover-zoom-frame" style={transition}>
         {image ? (
           <Image
             alt={image.altText || product.title}

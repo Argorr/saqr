@@ -7,7 +7,18 @@ import type {
 } from 'storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
-import {BATTERIES, BUILD_TIME, FINISHES, LIMITED_TAG, SIZES} from '~/lib/saqr';
+import {
+  BATTERIES,
+  BIKE_PROMISE,
+  BUILD_TIME,
+  FINISHES,
+  LIMITED_TAG,
+  SERIAL_ATTRIBUTE,
+  SIZES,
+  formatSerial,
+} from '~/lib/saqr';
+import {productTransitionName} from '~/lib/transitions';
+import {SerialPicker, firstFreeSerial} from './SerialPicker';
 
 type Variant = ProductFragment['selectedOrFirstAvailableVariant'];
 type OptionValue = MappedProductOptions['optionValues'][number];
@@ -22,6 +33,8 @@ type OptionValue = MappedProductOptions['optionValues'][number];
  *   it leads to, so "+ €600" is computed, not hard-coded.
  * - Bikes offer the accessories as add-ons; the summary and the button total
  *   everything, and one click adds the bike and its add-ons to the cart.
+ * - Bikes are reserved rather than "added to cart". The Shaheen asks for a
+ *   serial number, sent with the cart line as an attribute.
  */
 export function ProductConfigurator({
   product,
@@ -39,6 +52,10 @@ export function ProductConfigurator({
   const navigate = useNavigate();
   const {open} = useAside();
   const [chosenAddons, setChosenAddons] = useState<string[]>([]);
+  const isLimited = product.tags.includes(LIMITED_TAG);
+  const [serial, setSerial] = useState(() =>
+    isLimited ? firstFreeSerial() : null,
+  );
 
   const selectedAddons = addons.filter((addon) =>
     chosenAddons.includes(addon.id),
@@ -71,7 +88,18 @@ export function ProductConfigurator({
 
   const lines = selectedVariant
     ? [
-        {merchandiseId: selectedVariant.id, quantity: 1, selectedVariant},
+        {
+          merchandiseId: selectedVariant.id,
+          quantity: 1,
+          selectedVariant,
+          ...(serial
+            ? {
+                attributes: [
+                  {key: SERIAL_ATTRIBUTE, value: formatSerial(serial)},
+                ],
+              }
+            : {}),
+        },
         ...selectedAddons.flatMap((addon) =>
           addon.selectedOrFirstAvailableVariant
             ? [
@@ -97,7 +125,7 @@ export function ProductConfigurator({
 
       <div className="lg:py-10">
         <p className="!mt-0 mb-3 text-xs font-semibold tracking-[0.3em] text-copper uppercase">
-          {product.tags.includes(LIMITED_TAG)
+          {isLimited
             ? 'Limited edition · 99 numbered bikes'
             : isBike
               ? `Built to order · ${BUILD_TIME}`
@@ -125,6 +153,10 @@ export function ProductConfigurator({
               onChoose={choose}
             />
           ))}
+
+          {isLimited ? (
+            <SerialPicker value={serial} onChange={setSerial} />
+          ) : null}
 
           {isBike && addons.length ? (
             <fieldset className="!m-0 !border-0 !p-0">
@@ -193,6 +225,7 @@ export function ProductConfigurator({
           addons={selectedAddons}
           total={total}
           isBike={isBike}
+          serial={serial}
         />
 
         <AddToCartButton
@@ -203,13 +236,23 @@ export function ProductConfigurator({
         >
           {available ? (
             <>
-              Add to cart ·{' '}
-              <Money as="span" data={total} withoutTrailingZeros />
+              {isBike
+                ? `Reserve${serial ? ` No. ${String(serial).padStart(2, '0')}` : ''}`
+                : 'Add to cart'}{' '}
+              · <Money as="span" data={total} withoutTrailingZeros />
             </>
           ) : (
             'Sold out'
           )}
         </AddToCartButton>
+
+        {isBike ? (
+          <ul className="promise-list">
+            {BIKE_PROMISE.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </div>
   );
@@ -260,6 +303,11 @@ function Stage({
             <Image
               key={key}
               data={image}
+              style={
+                selected
+                  ? {viewTransitionName: productTransitionName(product.handle)}
+                  : undefined
+              }
               alt={image.altText || product.title}
               sizes="(min-width: 64em) 60vw, 100vw"
               loading={selected ? 'eager' : 'lazy'}
@@ -379,7 +427,13 @@ function OptionGroup({
       </div>
 
       {hint ? (
-        <p className="!mt-3 !mb-0 text-sm leading-relaxed text-sand-muted">
+        <p
+          className={`!mt-3 !mb-0 text-sand-muted ${
+            option.name === 'Finish'
+              ? 'font-serif text-xl leading-snug italic'
+              : 'text-sm leading-relaxed'
+          }`}
+        >
           {hint}
         </p>
       ) : null}
@@ -425,10 +479,12 @@ function Summary({
   addons,
   total,
   isBike,
+  serial,
 }: {
   product: ProductFragment;
   selectedVariant: Variant;
   addons: ProductAddonFragment[];
+  serial: number | null;
   total: {
     amount: string;
     currencyCode: NonNullable<Variant>['price']['currencyCode'];
@@ -451,6 +507,11 @@ function Summary({
             {product.title}
             {options ? (
               <span className="block text-sand-muted">{options}</span>
+            ) : null}
+            {serial ? (
+              <span className="block text-sand-muted">
+                {formatSerial(serial)}
+              </span>
             ) : null}
           </dt>
           <dd className="!m-0 text-sand tabular-nums">
@@ -485,13 +546,13 @@ function Summary({
           </dd>
         </div>
       </dl>
-      <p className="!mt-4 !mb-0 text-xs text-sand-muted">
-        {isBike
-          ? `Assembled by hand and shipped in ${BUILD_TIME}. Free delivery and setup at your door.`
-          : selectedVariant.availableForSale
+      {isBike ? null : (
+        <p className="!mt-4 !mb-0 text-xs text-sand-muted">
+          {selectedVariant.availableForSale
             ? 'In stock. Ships within two working days.'
             : 'Currently unavailable.'}
-      </p>
+        </p>
+      )}
     </section>
   );
 }

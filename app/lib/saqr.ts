@@ -52,6 +52,32 @@ export const LIMITED_TAG = 'limited-edition';
 export const BUILD_TIME = 'six weeks';
 
 /**
+ * The S1 Shaheen is a numbered series. Buyers choose their number; it is sent
+ * with the cart line as an attribute and engraved on the head tube.
+ * Saqr is fictional: the numbers already reserved are a fixed list, so the
+ * page renders the same on the server and in the browser.
+ */
+export const SERIES_SIZE = 99;
+export const SERIAL_ATTRIBUTE = 'Serial number';
+export const RESERVED_SERIALS = new Set([
+  1, 5, 6, 7, 8, 9, 10, 11, 13, 14, 17, 19, 21, 25, 29, 30, 32, 36, 37, 38, 39,
+  41, 42, 43, 45, 47, 48, 52, 53, 54, 55, 56, 57, 59, 61, 65, 66, 70, 72, 73,
+  74, 76, 78, 79, 82, 84, 85, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 99,
+]);
+
+/** "No. 07 / 99" */
+export function formatSerial(n: number) {
+  return `No. ${String(n).padStart(2, '0')} / ${SERIES_SIZE}`;
+}
+
+/** What every bike comes with, listed under the reserve button. */
+export const BIKE_PROMISE = [
+  `Built by hand to your configuration, ready in ${BUILD_TIME}`,
+  'Delivered and fitted to you at home by an atelier technician',
+  'Lifetime frame warranty and a first service at three months',
+];
+
+/**
  * Site navigation. Saqr sells two bikes, so the menu is curated here rather
  * than read from the Shopify menus. Hash links point at homepage sections.
  */

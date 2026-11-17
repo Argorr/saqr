@@ -6,6 +6,8 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/unbounded';
 @import '@fontsource-variable/manrope';
+@import '@fontsource/instrument-serif/latin-400.css';
+@import '@fontsource/instrument-serif/latin-400-italic.css';
 
 /*
  * Saqr design tokens.
@@ -25,6 +27,8 @@
   --font-display: 'Unbounded Variable', 'Arial Black', system-ui, sans-serif;
   --font-sans:
     'Manrope Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Editorial accent: quotes, serial numbers, finish notes, journal ledes. */
+  --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
 
   --ease-dive: cubic-bezier(0.16, 1, 0.3, 1);
 }

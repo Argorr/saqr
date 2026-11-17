@@ -5,6 +5,7 @@ import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
 import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
+import {SERIAL_ATTRIBUTE} from '~/lib/saqr';
 import type {
   CartApiQueryFragment,
   CartLineFragment,
@@ -71,6 +72,14 @@ export function CartLineItem({
                   <small>
                     {option.name}: {option.value}
                   </small>
+                </li>
+              ))}
+            {/* The Shaheen serial number chosen in the configurator. */}
+            {line.attributes
+              ?.filter((attribute) => attribute.key === SERIAL_ATTRIBUTE)
+              .map((attribute) => (
+                <li key={attribute.key}>
+                  <small className="cart-line-serial">{attribute.value}</small>
                 </li>
               ))}
           </ul>

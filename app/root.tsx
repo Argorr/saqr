@@ -127,11 +127,15 @@ function loadDeferredData({context}: Route.LoaderArgs) {
   };
 }
 
+const LOGO_INTRO_SCRIPT = `try{if(!sessionStorage.getItem('saqr-intro')){sessionStorage.setItem('saqr-intro','1');document.documentElement.dataset.intro=''}}catch(e){}`;
+
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
 
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the intro script below adds data-intro
+    // to <html> before React hydrates.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -140,6 +144,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={appStyles}></link>
         <Meta />
         <Links />
+        <script
+          nonce={nonce}
+          // Plays the logo intro on the first page of a visit only.
+          dangerouslySetInnerHTML={{__html: LOGO_INTRO_SCRIPT}}
+        />
       </head>
       <body>
         {children}

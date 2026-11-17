@@ -36,7 +36,7 @@ export function Press() {
           {QUOTES.map((item) => (
             <li key={item.source}>
               <figure className="!m-0">
-                <blockquote className="!m-0 font-display text-[clamp(1.125rem,1.7vw,1.375rem)] leading-snug font-medium text-sand">
+                <blockquote className="!m-0 font-serif text-[clamp(1.5rem,2.3vw,2rem)] leading-[1.2] text-sand italic">
                   <p className="!m-0">“{item.quote}”</p>
                 </blockquote>
                 <figcaption className="mt-5 text-xs tracking-[0.2em] text-sand-muted uppercase">

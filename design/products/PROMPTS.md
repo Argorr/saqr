@@ -64,6 +64,27 @@ Format vertical **4:5, 2048 × 2560** (1600 × 2000 minimum). Joindre `s1-copper
 À vérifier : format 4:5 (sinon « Same image, but recompose it as a vertical 4:5 portrait. »), 1600 px de large minimum,
 cinq doigts par main, aucun texte ni logo, pièces du vélo conformes à la photo jointe.
 
+**B2. Retouche du geste (v2)** · Gemini, joindre `atelier-drive.jpg` (à modifier) puis `s1-copper.jpg` (référence du vélo).
+La v1 était à 928 × 1152 px et la clé ne serrait aucun boulon.
+
+> Edit the first attached image. Keep the same scene, the same framing, the same dark workshop, the same warm lamp at the upper left, the same mechanic's shirt and forearms, the same copper bike and the same mood. The second attached image is the reference for the bike: the copper frame, the black mid-drive motor and the black crank must match it.
+>
+> Change only the tool and the gesture, so that it looks like a real mechanic tightening a bolt:
+> - The tool is a slim black click-type torque wrench, about 35 cm long, with a hex bit fitted at its head.
+> - The hex bit is clearly seated in the crank bolt at the centre of the crank arm, where the crank meets the motor spindle. The wrench is perpendicular to the bolt, its handle pointing horizontally out of the frame to the left.
+> - The right hand grips the end of the wrench handle and pulls it, the knuckles slightly tense.
+> - The left hand holds the crank arm firmly to stop it from turning, fingers wrapped around the arm, thumb on top.
+> - Nothing else touches the chainring. The chain stays on the chainring.
+>
+> Hands: anatomically correct, five fingers each, natural skin texture, the same skin tone and arm hair as in the original.
+>
+> Output: vertical portrait 4:5, the highest resolution you can produce, at least 1600 x 2000 pixels. Photorealistic, high-end editorial photography, sharp on the bolt, the bit and the fingers, the background softly out of focus.
+>
+> Strictly no logos, no brand names, no text, no numbers or scale markings on the wrench, the motor or anywhere else, no watermark.
+
+Si l'image reste trop petite : « Same image, upscale to 2048 × 2560 without changing anything ».
+Si le décor change : « Do not change anything except the hands and the tool. »
+
 ---
 
 ## Si le résultat dérive

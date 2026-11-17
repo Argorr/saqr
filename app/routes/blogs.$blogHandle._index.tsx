@@ -68,7 +68,7 @@ export default function Blog() {
 
   return (
     <div className="page">
-      <PageHeader eyebrow="Journal" title={blog.title} />
+      <PageHeader eyebrow="Saqr" title={blog.title} />
       {articles.nodes.length ? (
         <PaginatedResourceSection<ArticleItemFragment>
           connection={articles}

@@ -21,12 +21,14 @@ const COLUMNS = [
     links: [
       {label: 'The atelier', to: '/#atelier'},
       {label: 'Test rides', to: TEST_RIDE_LINK.to},
+      {label: 'Journal', to: '/blogs/journal'},
       {label: 'Press', to: '/#press'},
     ],
   },
   {
     title: 'Help',
     links: [
+      {label: 'Contact', to: '/pages/contact'},
       {label: 'Your account', to: '/account'},
       {label: 'Search', to: '/search'},
       {label: 'Privacy policy', to: '/policies/privacy-policy'},

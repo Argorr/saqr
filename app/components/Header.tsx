@@ -83,8 +83,9 @@ export function SaqrLogo() {
 }
 
 /**
- * The curated site menu. Product pages are NavLinks so the current one is
- * marked; homepage sections are plain hash links.
+ * The curated site menu. Pages are NavLinks so the current one is marked
+ * (the Journal stays marked on its articles); homepage sections are plain
+ * hash links.
  */
 export function HeaderMenu({viewport}: {viewport: Viewport}) {
   const {close} = useAside();
@@ -108,7 +109,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
             onClick={close}
             prefetch="intent"
             className="header-menu-item"
-            end
+            end={!item.to.startsWith('/blogs')}
           >
             {item.label}
           </NavLink>

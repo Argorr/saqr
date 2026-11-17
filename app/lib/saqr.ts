@@ -60,6 +60,7 @@ export const NAV_LINKS = [
   {label: 'Shaheen', to: '/products/saqr-s1-shaheen'},
   {label: 'Atelier', to: '/#atelier'},
   {label: 'Accessories', to: '/#accessories'},
+  {label: 'Journal', to: '/blogs/journal'},
 ];
 
 export const TEST_RIDE_LINK = {label: 'Book a test ride', to: '/#test-ride'};

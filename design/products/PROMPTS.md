@@ -37,6 +37,18 @@ Référence de style : `design/products/s1-graphite.png` (S1 Graphite).
 
 > Compact premium electric bike battery charger, a small rectangular block in matte graphite aluminium with fine cooling fins and one thin copper accent line, a braided black cable neatly coiled beside it ending in a round metal connector, placed on a black disc turntable with a thin glowing copper rim, three-quarter view. Pure black studio background, soft top light and a warm copper rim light, photorealistic product photography, square 1:1. No logos, no text, no watermark.
 
+## 7. Gros plan Atelier (accueil, section « Made by hand ») → `atelier-drive.jpg`
+
+Format vertical **4:5, 2048 × 2560** (1600 × 2000 minimum). Joindre `s1-copper.jpg` comme référence.
+
+**A. Gros plan studio** (va avec la légende actuelle « 85 Nm mid-drive, sealed inside the frame ») :
+
+> Use the attached image as the reference for the bike's design and finish. Create a close-up, vertical 4:5 product photograph of the same bike's mid-drive motor area: the bottom of the brushed copper down tube with the integrated battery, the black motor housing, the crank arm and the chainring, seen slightly from below at the level of the bottom bracket. Shallow depth of field, the motor in sharp focus, the rest of the frame softly falling into darkness. Pure black studio background, soft top light and a warm copper rim light along the tube edges. Photorealistic macro product photography, high detail on the metal textures and machined edges. No logos, no text, no watermark.
+
+**B. Variante atelier** (plus « fait main », légende à adapter) :
+
+> Use the attached image as the reference for the bike's design and finish. Vertical 4:5 close-up in a dark, quiet bicycle workshop: a mechanic's hands, sleeves rolled up, tightening a bolt on the black mid-drive motor of the same brushed copper bike with a slim torque wrench. Only the hands, the tool, the motor, the crank and the bottom of the copper frame are in frame, no face. Warm low light from a single workshop lamp, copper reflections on the frame, deep black shadows, shallow depth of field. Photorealistic, high detail. No logos, no text, no watermark.
+
 ---
 
 ## Si le résultat dérive

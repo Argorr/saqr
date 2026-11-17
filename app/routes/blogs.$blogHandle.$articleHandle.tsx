@@ -1,10 +1,12 @@
-import {useLoaderData} from 'react-router';
+import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs.$blogHandle.$articleHandle';
 import {Image} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {PageHeader} from '~/components/PageHeader';
+import {formatArticleDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.article.title ?? ''} article`}];
+  return [{title: `${data?.article.title ?? 'Journal'} | Saqr`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -53,7 +55,7 @@ async function loadCriticalData({context, request, params}: Route.LoaderArgs) {
 
   const article = blog.articleByHandle;
 
-  return {article};
+  return {article, blogHandle};
 }
 
 /**
@@ -66,31 +68,32 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 }
 
 export default function Article() {
-  const {article} = useLoaderData<typeof loader>();
+  const {article, blogHandle} = useLoaderData<typeof loader>();
   const {title, image, contentHtml, author} = article;
 
-  const publishedDate = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(article.publishedAt));
-
   return (
-    <div className="article">
-      <h1>
-        {title}
-        <div>
-          <time dateTime={article.publishedAt}>{publishedDate}</time> &middot;{' '}
-          <address>{author?.name}</address>
-        </div>
-      </h1>
-
-      {image && <Image data={image} sizes="90vw" loading="eager" />}
-      <div
-        dangerouslySetInnerHTML={{__html: contentHtml}}
-        className="article"
-      />
-    </div>
+    <article className="page">
+      <Link to={`/blogs/${blogHandle}`} className="page-back">
+        <span aria-hidden="true">←</span> Journal
+      </Link>
+      <PageHeader eyebrow="Journal" title={title}>
+        <p className="article-meta">
+          <time dateTime={article.publishedAt}>
+            {formatArticleDate(article.publishedAt)}
+          </time>
+          {author?.name ? <> · {author.name}</> : null}
+        </p>
+      </PageHeader>
+      {image && (
+        <Image
+          className="article-image"
+          data={image}
+          sizes="(min-width: 1280px) 1200px, 100vw"
+          loading="eager"
+        />
+      )}
+      <div className="prose" dangerouslySetInnerHTML={{__html: contentHtml}} />
+    </article>
   );
 }
 

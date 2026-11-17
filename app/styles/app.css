@@ -1167,33 +1167,38 @@ label.configurator-card:has(:focus-visible) {
 
 /*
 * --------------------------------------------------
-* routes/blog._index.tsx
+* Journal (blog) and content pages
 * --------------------------------------------------
 */
-.blog-grid {
+.article-grid {
   display: grid;
-  grid-gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(var(--grid-item-width), 1fr));
-  margin-bottom: 2rem;
+  gap: 2.5rem 1.5rem;
+  @media (min-width: 40em) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 64em) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.blog-article-image {
-  aspect-ratio: 3/2;
+.article-meta {
+  color: var(--color-sand-muted);
+  font-size: 0.9375rem;
+}
+
+.article-image {
+  border-radius: 2px;
   display: block;
-}
-
-.blog-article-image img {
-  height: 100%;
-}
-
-/*
-* --------------------------------------------------
-* routes/blog.$articlehandle.tsx
-* --------------------------------------------------
-*/
-.article img {
   height: auto;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
   width: 100%;
+}
+
+.page-empty {
+  border-top: 1px solid var(--color-line);
+  color: var(--color-sand-muted);
+  max-width: 40rem;
+  padding-top: 1.5rem;
 }
 
 /*

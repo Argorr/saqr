@@ -3,11 +3,12 @@ import type {Route} from './+types/blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
+import {PageHeader} from '~/components/PageHeader';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Blogs`}];
+  return [{title: 'Journal | Saqr'}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -54,22 +55,23 @@ export default function Blogs() {
   const {blogs} = useLoaderData<typeof loader>();
 
   return (
-    <div className="blogs">
-      <h1>Blogs</h1>
-      <div className="blogs-grid">
-        <PaginatedResourceSection<BlogNode> connection={blogs}>
-          {({node: blog}) => (
-            <Link
-              className="blog"
-              key={blog.handle}
-              prefetch="intent"
-              to={`/blogs/${blog.handle}`}
-            >
-              <h2>{blog.title}</h2>
-            </Link>
-          )}
-        </PaginatedResourceSection>
-      </div>
+    <div className="page">
+      <PageHeader eyebrow="Saqr" title="Journal" />
+      <PaginatedResourceSection<BlogNode>
+        connection={blogs}
+        resourcesClassName="policy-list"
+      >
+        {({node: blog}) => (
+          <Link
+            className="policy-list-link"
+            key={blog.handle}
+            prefetch="intent"
+            to={`/blogs/${blog.handle}`}
+          >
+            {blog.title} <span aria-hidden="true">→</span>
+          </Link>
+        )}
+      </PaginatedResourceSection>
     </div>
   );
 }

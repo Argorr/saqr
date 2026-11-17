@@ -4,9 +4,11 @@ import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {PageHeader} from '~/components/PageHeader';
+import {formatArticleDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.blog.title ?? ''} blog`}];
+  return [{title: `${data?.blog.title ?? 'Journal'} | Saqr`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -65,10 +67,14 @@ export default function Blog() {
   const {articles} = blog;
 
   return (
-    <div className="blog">
-      <h1>{blog.title}</h1>
-      <div className="blog-grid">
-        <PaginatedResourceSection<ArticleItemFragment> connection={articles}>
+    <div className="page">
+      <PageHeader eyebrow="Journal" title={blog.title} />
+      {articles.nodes.length ? (
+        <PaginatedResourceSection<ArticleItemFragment>
+          connection={articles}
+          resourcesClassName="article-grid"
+          ariaLabel={`${blog.title} articles`}
+        >
           {({node: article, index}) => (
             <ArticleItem
               article={article}
@@ -77,7 +83,9 @@ export default function Blog() {
             />
           )}
         </PaginatedResourceSection>
-      </div>
+      ) : (
+        <p className="page-empty">No stories yet. The first ones are on their way.</p>
+      )}
     </div>
   );
 }
@@ -89,29 +97,31 @@ function ArticleItem({
   article: ArticleItemFragment;
   loading?: HTMLImageElement['loading'];
 }) {
-  const publishedAt = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(article.publishedAt!));
   return (
-    <div className="blog-article" key={article.id}>
-      <Link to={`/blogs/${article.blog.handle}/${article.handle}`}>
+    <Link
+      className="product-card"
+      prefetch="intent"
+      to={`/blogs/${article.blog.handle}/${article.handle}`}
+    >
+      <div className="product-card-media hover-zoom-frame">
         {article.image && (
-          <div className="blog-article-image">
-            <Image
-              alt={article.image.altText || article.title}
-              aspectRatio="3/2"
-              data={article.image}
-              loading={loading}
-              sizes="(min-width: 768px) 50vw, 100vw"
-            />
-          </div>
+          <Image
+            alt={article.image.altText || article.title}
+            aspectRatio="1/1"
+            className="hover-zoom"
+            data={article.image}
+            loading={loading}
+            sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
+          />
         )}
-        <h3>{article.title}</h3>
-        <small>{publishedAt}</small>
-      </Link>
-    </div>
+      </div>
+      <div className="product-card-body">
+        <h2 className="product-card-title">{article.title}</h2>
+        <time className="product-card-price" dateTime={article.publishedAt}>
+          {formatArticleDate(article.publishedAt)}
+        </time>
+      </div>
+    </Link>
   );
 }
 

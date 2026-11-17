@@ -1,9 +1,10 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {PageHeader} from '~/components/PageHeader';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
+  return [{title: `${data?.page.title ?? 'Page'} | Saqr`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -59,10 +60,12 @@ export default function Page() {
 
   return (
     <div className="page">
-      <header>
-        <h1>{page.title}</h1>
-      </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
+      <PageHeader eyebrow="Saqr" title={page.title} />
+      {page.body.trim() ? (
+        <div className="prose" dangerouslySetInnerHTML={{__html: page.body}} />
+      ) : (
+        <p className="page-empty">This page is still being written.</p>
+      )}
     </div>
   );
 }

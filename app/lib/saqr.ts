@@ -63,3 +63,12 @@ export const NAV_LINKS = [
 ];
 
 export const TEST_RIDE_LINK = {label: 'Book a test ride', to: '/#test-ride'};
+
+/** Journal dates, e.g. "17 November 2026". */
+export function formatArticleDate(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date(iso));
+}

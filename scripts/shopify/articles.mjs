@@ -125,3 +125,4 @@ articles.forEach((a, i) => {
   writeFileSync(file, JSON.stringify({article}, null, 2));
   console.log(file);
 });
+/* eslint-enable no-console */

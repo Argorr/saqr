@@ -42,3 +42,4 @@ const body = `
 
 writeFileSync(file, JSON.stringify({id, page: {body: body.trim()}}, null, 2));
 console.log(file);
+/* eslint-enable no-console */

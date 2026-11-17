@@ -40,6 +40,8 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ['.tryhydrogen.dev'],
+    // Customer account tunnel (--customer-account-push): tryhydrogen.dev
+    // forwards to a Cloudflare tunnel that keeps its own host name.
+    allowedHosts: ['.tryhydrogen.dev', '.trycloudflare.com'],
   },
 });

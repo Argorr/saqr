@@ -5,7 +5,7 @@ import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {PageHeader} from '~/components/PageHeader';
-import {formatArticleDate} from '~/lib/saqr';
+import {formatDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `${data?.blog.title ?? 'Journal'} | Saqr`}];
@@ -84,7 +84,9 @@ export default function Blog() {
           )}
         </PaginatedResourceSection>
       ) : (
-        <p className="page-empty">No stories yet. The first ones are on their way.</p>
+        <p className="page-empty">
+          No stories yet. The first ones are on their way.
+        </p>
       )}
     </div>
   );
@@ -118,7 +120,7 @@ function ArticleItem({
       <div className="product-card-body">
         <h2 className="product-card-title">{article.title}</h2>
         <time className="product-card-price" dateTime={article.publishedAt}>
-          {formatArticleDate(article.publishedAt)}
+          {formatDate(article.publishedAt)}
         </time>
       </div>
     </Link>

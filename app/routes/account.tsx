@@ -6,6 +6,7 @@ import {
   useLoaderData,
 } from 'react-router';
 import type {Route} from './+types/account';
+import {PageHeader} from '~/components/PageHeader';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
 
 export function shouldRevalidate() {
@@ -37,61 +38,45 @@ export async function loader({context}: Route.LoaderArgs) {
 export default function AccountLayout() {
   const {customer} = useLoaderData<typeof loader>();
 
-  const heading = customer
-    ? customer.firstName
-      ? `Welcome, ${customer.firstName}`
-      : `Welcome to your account.`
-    : 'Account Details';
+  const heading = customer.firstName
+    ? `Welcome, ${customer.firstName}`
+    : 'Your account';
 
   return (
-    <div className="account">
-      <h1>{heading}</h1>
-      <br />
+    <div className="page">
+      <PageHeader eyebrow="Account" title={heading} />
       <AccountMenu />
-      <br />
-      <br />
       <Outlet context={{customer}} />
     </div>
   );
 }
 
+const ACCOUNT_LINKS = [
+  {label: 'Orders', to: '/account/orders'},
+  {label: 'Profile', to: '/account/profile'},
+  {label: 'Addresses', to: '/account/addresses'},
+];
+
 function AccountMenu() {
-  function isActiveStyle({
-    isActive,
-    isPending,
-  }: {
-    isActive: boolean;
-    isPending: boolean;
-  }) {
-    return {
-      fontWeight: isActive ? 'bold' : undefined,
-      color: isPending ? 'grey' : 'black',
-    };
-  }
-
   return (
-    <nav role="navigation">
-      <NavLink to="/account/orders" style={isActiveStyle}>
-        Orders &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/profile" style={isActiveStyle}>
-        &nbsp; Profile &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/addresses" style={isActiveStyle}>
-        &nbsp; Addresses &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <Logout />
+    <nav className="account-nav" aria-label="Account">
+      {ACCOUNT_LINKS.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          prefetch="intent"
+          className={({isActive, isPending}) =>
+            `account-nav-link${isActive ? ' is-active' : ''}${isPending ? ' is-pending' : ''}`
+          }
+        >
+          {link.label}
+        </NavLink>
+      ))}
+      <Form className="account-logout" method="POST" action="/account/logout">
+        <button type="submit" className="account-nav-link">
+          Sign out
+        </button>
+      </Form>
     </nav>
-  );
-}
-
-function Logout() {
-  return (
-    <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
-    </Form>
   );
 }

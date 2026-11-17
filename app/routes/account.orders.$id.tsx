@@ -1,4 +1,5 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
+import {formatDate, formatStatus} from '~/lib/saqr';
 import type {Route} from './+types/account.orders.$id';
 import {Money, Image} from '@shopify/hydrogen';
 import type {
@@ -8,7 +9,7 @@ import type {
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Order ${data?.order?.name}`}];
+  return [{title: `Order ${data?.order?.name ?? ''} | Saqr`}];
 };
 
 export async function loader({params, context}: Route.LoaderArgs) {
@@ -39,7 +40,8 @@ export async function loader({params, context}: Route.LoaderArgs) {
   const discountApplications = order.discountApplications.nodes;
 
   // Get fulfillment status from first fulfillment node
-  const fulfillmentStatus = order.fulfillments.nodes[0]?.status ?? 'N/A';
+  const fulfillmentStatus =
+    order.fulfillments.nodes[0]?.status ?? order.fulfillmentStatus;
 
   // Get first discount value with proper type checking
   const firstDiscount = discountApplications[0]?.value;
@@ -81,132 +83,132 @@ export default function OrderRoute() {
     discountPercentage,
     fulfillmentStatus,
   } = useLoaderData<typeof loader>();
+  const hasDiscount = Boolean(
+    (discountValue && Number(discountValue.amount)) || discountPercentage,
+  );
+
   return (
-    <div className="account-order">
-      <h2>Order {order.name}</h2>
-      <p>Placed on {new Date(order.processedAt!).toDateString()}</p>
-      {order.confirmationNumber && (
-        <p>Confirmation: {order.confirmationNumber}</p>
-      )}
-      <br />
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lineItems.map((lineItem, lineItemIndex) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <OrderLineRow key={lineItemIndex} lineItem={lineItem} />
-            ))}
-          </tbody>
-          <tfoot>
-            {((discountValue && discountValue.amount) ||
-              discountPercentage) && (
-              <tr>
-                <th scope="row" colSpan={3}>
-                  <p>Discounts</p>
-                </th>
-                <th scope="row">
-                  <p>Discounts</p>
-                </th>
-                <td>
-                  {discountPercentage ? (
-                    <span>-{discountPercentage}% OFF</span>
-                  ) : (
-                    discountValue && <Money data={discountValue!} />
-                  )}
-                </td>
-              </tr>
-            )}
+    <section className="account-section">
+      <Link to="/account/orders" className="page-back">
+        <span aria-hidden="true">←</span> All orders
+      </Link>
+      <h2 className="account-section-title">Order {order.name}</h2>
+      <p className="order-meta">
+        Placed on {formatDate(order.processedAt)}
+        {order.confirmationNumber ? (
+          <> · Confirmation {order.confirmationNumber}</>
+        ) : null}
+        {fulfillmentStatus ? <> · {formatStatus(fulfillmentStatus)}</> : null}
+      </p>
+
+      <table className="order-table">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Price</th>
+            <th scope="col">Qty</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lineItems.map((lineItem) => (
+            <OrderLineRow key={lineItem.id} lineItem={lineItem} />
+          ))}
+        </tbody>
+        <tfoot>
+          {hasDiscount ? (
             <tr>
               <th scope="row" colSpan={3}>
-                <p>Subtotal</p>
-              </th>
-              <th scope="row">
-                <p>Subtotal</p>
+                Discount
               </th>
               <td>
-                <Money data={order.subtotal!} />
+                {discountPercentage ? (
+                  <span>−{discountPercentage}%</span>
+                ) : (
+                  discountValue && <Money data={discountValue} />
+                )}
               </td>
             </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
-                Tax
-              </th>
-              <th scope="row">
-                <p>Tax</p>
-              </th>
-              <td>
-                <Money data={order.totalTax!} />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
-                Total
-              </th>
-              <th scope="row">
-                <p>Total</p>
-              </th>
-              <td>
-                <Money data={order.totalPrice!} />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+          ) : null}
+          <tr>
+            <th scope="row" colSpan={3}>
+              Subtotal
+            </th>
+            <td>
+              <Money data={order.subtotal!} />
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" colSpan={3}>
+              Tax
+            </th>
+            <td>
+              <Money data={order.totalTax!} />
+            </td>
+          </tr>
+          <tr className="order-table-total">
+            <th scope="row" colSpan={3}>
+              Total
+            </th>
+            <td>
+              <Money data={order.totalPrice!} />
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div className="order-details">
         <div>
-          <h3>Shipping Address</h3>
-          {order?.shippingAddress ? (
+          <h3 className="order-details-title">Delivery address</h3>
+          {order.shippingAddress ? (
             <address>
-              <p>{order.shippingAddress.name}</p>
-              {order.shippingAddress.formatted ? (
-                <p>{order.shippingAddress.formatted}</p>
-              ) : (
-                ''
-              )}
-              {order.shippingAddress.formattedArea ? (
-                <p>{order.shippingAddress.formattedArea}</p>
-              ) : (
-                ''
-              )}
+              {order.shippingAddress.formatted?.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
             </address>
           ) : (
-            <p>No shipping address defined</p>
+            <p>No delivery address.</p>
           )}
-          <h3>Status</h3>
-          <div>
-            <p>{fulfillmentStatus}</p>
-          </div>
         </div>
-      </div>
-      <br />
-      <p>
-        <a target="_blank" href={order.statusPageUrl} rel="noreferrer">
-          View Order Status →
+        <a
+          className="button button-ghost"
+          target="_blank"
+          href={order.statusPageUrl}
+          rel="noreferrer"
+        >
+          Track this order <span aria-hidden="true">↗</span>
         </a>
-      </p>
-    </div>
+      </div>
+    </section>
   );
 }
 
 function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
+  const lineTotal = {
+    amount: String(
+      Number(lineItem.price!.amount) * lineItem.quantity -
+        Number(lineItem.totalDiscount?.amount ?? 0),
+    ),
+    currencyCode: lineItem.price!.currencyCode,
+  };
+
   return (
-    <tr key={lineItem.id}>
+    <tr>
       <td>
-        <div>
-          {lineItem?.image && (
-            <div>
-              <Image data={lineItem.image} width={96} height={96} />
-            </div>
-          )}
+        <div className="order-line">
+          {lineItem.image ? (
+            <Image
+              className="order-line-image"
+              data={lineItem.image}
+              width={64}
+              height={64}
+            />
+          ) : null}
           <div>
-            <p>{lineItem.title}</p>
-            <small>{lineItem.variantTitle}</small>
+            <p className="order-line-title">{lineItem.title}</p>
+            {lineItem.variantTitle ? (
+              <p className="order-line-variant">{lineItem.variantTitle}</p>
+            ) : null}
           </div>
         </div>
       </td>
@@ -215,7 +217,7 @@ function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
       </td>
       <td>{lineItem.quantity}</td>
       <td>
-        <Money data={lineItem.totalDiscount!} />
+        <Money data={lineTotal} />
       </td>
     </tr>
   );

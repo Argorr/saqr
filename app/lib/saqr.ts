@@ -64,11 +64,18 @@ export const NAV_LINKS = [
 
 export const TEST_RIDE_LINK = {label: 'Book a test ride', to: '/#test-ride'};
 
-/** Journal dates, e.g. "17 November 2026". */
-export function formatArticleDate(iso: string) {
+/** Dates for the journal and orders, e.g. "17 November 2026". */
+export function formatDate(iso: string) {
   return new Intl.DateTimeFormat('en-GB', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(new Date(iso));
+}
+
+/** Shopify enum statuses for display: "PARTIALLY_PAID" → "Partially paid". */
+export function formatStatus(status?: string | null) {
+  if (!status) return '';
+  const words = status.toLowerCase().replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }

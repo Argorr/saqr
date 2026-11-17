@@ -3,7 +3,7 @@ import type {Route} from './+types/blogs.$blogHandle.$articleHandle';
 import {Image} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {PageHeader} from '~/components/PageHeader';
-import {formatArticleDate} from '~/lib/saqr';
+import {formatDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `${data?.article.title ?? 'Journal'} | Saqr`}];
@@ -79,7 +79,7 @@ export default function Article() {
       <PageHeader eyebrow="Journal" title={title}>
         <p className="article-meta">
           <time dateTime={article.publishedAt}>
-            {formatArticleDate(article.publishedAt)}
+            {formatDate(article.publishedAt)}
           </time>
           {author?.name ? <> · {author.name}</> : null}
         </p>

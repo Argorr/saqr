@@ -22,6 +22,7 @@ import type {
   CustomerOrdersFragment,
   OrderItemFragment,
 } from 'customer-accountapi.generated';
+import {formatDate, formatStatus} from '~/lib/saqr';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
 type OrdersLoaderData = {
@@ -30,7 +31,7 @@ type OrdersLoaderData = {
 };
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Orders'}];
+  return [{title: 'Orders | Saqr'}];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
@@ -63,10 +64,11 @@ export default function Orders() {
   const {orders} = customer;
 
   return (
-    <div className="orders">
+    <section className="account-section">
+      <h2 className="account-section-title">Orders</h2>
       <OrderSearchForm currentFilters={filters} />
       <OrdersTable orders={orders} filters={filters} />
-    </div>
+    </section>
   );
 }
 
@@ -80,9 +82,12 @@ function OrdersTable({
   const hasFilters = !!(filters.name || filters.confirmationNumber);
 
   return (
-    <div className="acccount-orders" aria-live="polite">
+    <div aria-live="polite">
       {orders?.nodes.length ? (
-        <PaginatedResourceSection connection={orders}>
+        <PaginatedResourceSection
+          connection={orders}
+          resourcesClassName="order-list"
+        >
           {({node: order}) => <OrderItem key={order.id} order={order} />}
         </PaginatedResourceSection>
       ) : (
@@ -94,22 +99,20 @@ function OrdersTable({
 
 function EmptyOrders({hasFilters = false}: {hasFilters?: boolean}) {
   return (
-    <div>
+    <div className="page-empty">
       {hasFilters ? (
         <>
-          <p>No orders found matching your search.</p>
-          <br />
-          <p>
-            <Link to="/account/orders">Clear filters →</Link>
-          </p>
+          <p>No orders match your search.</p>
+          <Link className="account-link" to="/account/orders">
+            Clear the search <span aria-hidden="true">→</span>
+          </Link>
         </>
       ) : (
         <>
-          <p>You haven&apos;t placed any orders yet.</p>
-          <br />
-          <p>
-            <Link to="/collections">Start Shopping →</Link>
-          </p>
+          <p>You haven’t placed an order yet.</p>
+          <Link className="account-link" to="/products/saqr-s1">
+            Configure your S1 <span aria-hidden="true">→</span>
+          </Link>
         </>
       )}
     </div>
@@ -156,33 +159,30 @@ function OrderSearchForm({
       aria-label="Search orders"
     >
       <fieldset className="order-search-fieldset">
-        <legend className="order-search-legend">Filter Orders</legend>
-
-        <div className="order-search-inputs">
-          <input
-            type="search"
-            name={ORDER_FILTER_FIELDS.NAME}
-            placeholder="Order #"
-            aria-label="Order number"
-            defaultValue={currentFilters.name || ''}
-            className="order-search-input"
-          />
-          <input
-            type="search"
-            name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
-            placeholder="Confirmation #"
-            aria-label="Confirmation number"
-            defaultValue={currentFilters.confirmationNumber || ''}
-            className="order-search-input"
-          />
-        </div>
-
+        <legend className="sr-only">Find an order</legend>
+        <input
+          type="search"
+          name={ORDER_FILTER_FIELDS.NAME}
+          placeholder="Order number"
+          aria-label="Order number"
+          defaultValue={currentFilters.name || ''}
+          className="order-search-input"
+        />
+        <input
+          type="search"
+          name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
+          placeholder="Confirmation number"
+          aria-label="Confirmation number"
+          defaultValue={currentFilters.confirmationNumber || ''}
+          className="order-search-input"
+        />
         <div className="order-search-buttons">
-          <button type="submit" disabled={isSearching}>
-            {isSearching ? 'Searching' : 'Search'}
+          <button type="submit" className="button" disabled={isSearching}>
+            {isSearching ? 'Searching…' : 'Find'}
           </button>
           {hasFilters && (
             <button
+              className="button button-ghost"
               type="button"
               disabled={isSearching}
               onClick={() => {
@@ -202,21 +202,15 @@ function OrderSearchForm({
 function OrderItem({order}: {order: OrderItemFragment}) {
   const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
   return (
-    <>
-      <fieldset>
-        <Link to={`/account/orders/${btoa(order.id)}`}>
-          <strong>#{order.number}</strong>
-        </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
-        {order.confirmationNumber && (
-          <p>Confirmation: {order.confirmationNumber}</p>
-        )}
-        <p>{order.financialStatus}</p>
-        {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
-      </fieldset>
-      <br />
-    </>
+    <Link className="order-row" to={`/account/orders/${btoa(order.id)}`}>
+      <span className="order-row-number">Order #{order.number}</span>
+      <time className="order-row-date" dateTime={order.processedAt}>
+        {formatDate(order.processedAt)}
+      </time>
+      <span className="order-row-status">
+        {formatStatus(fulfillmentStatus ?? order.financialStatus)}
+      </span>
+      <Money className="order-row-total" data={order.totalPrice} />
+    </Link>
   );
 }

@@ -8,6 +8,7 @@ import {
   useNavigation,
   useOutletContext,
 } from 'react-router';
+import {Field} from '~/components/Field';
 import type {Route} from './+types/account.profile';
 
 export type ActionResponse = {
@@ -16,7 +17,7 @@ export type ActionResponse = {
 };
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Profile'}];
+  return [{title: 'Profile | Saqr'}];
 };
 
 export async function loader({context}: Route.LoaderArgs) {
@@ -86,48 +87,43 @@ export default function AccountProfile() {
   const customer = action?.customer ?? account?.customer;
 
   return (
-    <div className="account-profile">
-      <h2>My profile</h2>
-      <br />
-      <Form method="PUT">
-        <legend>Personal information</legend>
-        <fieldset>
-          <label htmlFor="firstName">First name</label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            autoComplete="given-name"
-            placeholder="First name"
-            aria-label="First name"
-            defaultValue={customer.firstName ?? ''}
-            minLength={2}
-          />
-          <label htmlFor="lastName">Last name</label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            autoComplete="family-name"
-            placeholder="Last name"
-            aria-label="Last name"
-            defaultValue={customer.lastName ?? ''}
-            minLength={2}
-          />
+    <section className="account-section">
+      <h2 className="account-section-title">Profile</h2>
+      <Form method="PUT" className="account-form">
+        <fieldset className="account-fieldset">
+          <legend className="sr-only">Personal information</legend>
+          <div className="field-row">
+            <Field label="First name">
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                defaultValue={customer.firstName ?? ''}
+                minLength={2}
+              />
+            </Field>
+            <Field label="Last name">
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                defaultValue={customer.lastName ?? ''}
+                minLength={2}
+              />
+            </Field>
+          </div>
         </fieldset>
         {action?.error ? (
-          <p>
-            <mark>
-              <small>{action.error}</small>
-            </mark>
+          <p className="form-error" role="alert">
+            {action.error}
           </p>
-        ) : (
-          <br />
-        )}
-        <button type="submit" disabled={state !== 'idle'}>
-          {state !== 'idle' ? 'Updating' : 'Update'}
+        ) : null}
+        <button type="submit" className="button" disabled={state !== 'idle'}>
+          {state !== 'idle' ? 'Saving…' : 'Save changes'}
         </button>
       </Form>
-    </div>
+    </section>
   );
 }

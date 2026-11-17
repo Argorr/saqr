@@ -46,6 +46,35 @@ export const BIKE_SPECS = [
   {label: 'Brakes', value: 'Hydraulic discs, 180 / 160 mm'},
 ];
 
+/**
+ * Copy for the bikes collection: one editorial chapter per bike, with the
+ * three figures that matter most for it.
+ */
+export const BIKE_CHAPTERS: Record<
+  string,
+  {tagline: string; finish?: string; specs: {label: string; value: string}[]}
+> = {
+  'saqr-s1': {
+    tagline:
+      'One unbroken line from the bar to the drop-outs. Three finishes, two batteries, built by hand to your size.',
+    specs: [
+      {label: 'Range', value: '160 km'},
+      {label: 'Motor', value: '85 Nm'},
+      {label: 'Weight', value: '18.9 kg'},
+    ],
+  },
+  'saqr-s1-shaheen': {
+    tagline:
+      'Gloss black and brushed copper, a hand-stitched saddle and your number on the head tube. Ninety-nine, then never again.',
+    finish: 'Gloss black and brushed copper',
+    specs: [
+      {label: 'Series', value: '99 bikes'},
+      {label: 'Battery', value: '720 Wh'},
+      {label: 'Range', value: '160 km'},
+    ],
+  },
+};
+
 /** Products tagged `bike` are built to order and get the accessory add-ons. */
 export const BIKE_TAG = 'bike';
 export const LIMITED_TAG = 'limited-edition';

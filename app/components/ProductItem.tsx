@@ -30,11 +30,11 @@ export function ProductItem({
     >
       <div className="product-card-media hover-zoom-frame" style={transition}>
         {image ? (
+          // Never cropped: a bike (43:24) sits whole in the square frame,
+          // on the same black as its photo.
           <Image
             alt={image.altText || product.title}
             className="hover-zoom"
-            aspectRatio="1/1"
-            crop="center"
             data={image}
             loading={loading}
             sizes="(min-width: 64em) 400px, (min-width: 40em) 50vw, 100vw"
@@ -42,7 +42,14 @@ export function ProductItem({
         ) : null}
       </div>
       <div className="product-card-body">
-        <h2 className="product-card-title">{product.title}</h2>
+        <div className="min-w-0">
+          <h2 className="product-card-title">{product.title}</h2>
+          {'description' in product && product.description ? (
+            <p className="product-card-line">
+              {firstSentence(product.description)}
+            </p>
+          ) : null}
+        </div>
         <p className="product-card-price">
           {fromPrice ? 'From ' : null}
           <Money as="span" data={minVariantPrice} withoutTrailingZeros />
@@ -50,4 +57,10 @@ export function ProductItem({
       </div>
     </Link>
   );
+}
+
+/** The opening sentence of a product description, for the card. */
+function firstSentence(text: string) {
+  const match = /^.*?[.!?](\s|$)/.exec(text);
+  return (match ? match[0] : text).trim();
 }

@@ -308,7 +308,7 @@ button.reset:hover:not(:has(> *)) {
 .header-menu-desktop .header-menu-item::after {
   background: var(--color-copper);
   bottom: 0;
-  content: "";
+  content: '';
   height: 1px;
   inset-inline: 0;
   position: absolute;
@@ -632,7 +632,8 @@ button.reset:hover:not(:has(> *)) {
 .page {
   margin-inline: auto;
   max-width: 1280px;
-  padding: clamp(2.5rem, 7vw, 5rem) clamp(0rem, 3vw, 2.5rem) clamp(4rem, 9vw, 7rem);
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(0rem, 3vw, 2.5rem)
+    clamp(4rem, 9vw, 7rem);
 }
 
 .page-header {
@@ -725,7 +726,7 @@ button.reset:hover:not(:has(> *)) {
   border-radius: 0;
   display: block;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
 }
 
@@ -788,6 +789,209 @@ button.reset:hover:not(:has(> *)) {
   color: var(--color-sand-muted);
   font-size: 0.9375rem;
   white-space: nowrap;
+}
+
+.product-card-line {
+  color: var(--color-sand-muted);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.35;
+  margin: 0.35rem 0 0;
+}
+
+/* Collection intro under the title, in the editorial serif. */
+.page-intro .collection-intro {
+  color: var(--color-sand-muted);
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/*
+ * Bikes collection: one editorial chapter per bike (BikeChapter.tsx).
+ */
+.bike-chapters {
+  display: grid;
+  gap: clamp(5rem, 12vw, 9rem);
+}
+
+.bike-chapter-media {
+  aspect-ratio: 43 / 24;
+  display: block;
+  position: relative;
+}
+
+.bike-chapter-media img {
+  border-radius: 0;
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+/* The photo's black melts into the page on every side. */
+.bike-chapter-media::after {
+  background:
+    linear-gradient(
+      to right,
+      var(--color-ink),
+      transparent 8%,
+      transparent 92%,
+      var(--color-ink)
+    ),
+    linear-gradient(
+      to top,
+      var(--color-ink),
+      transparent 10%,
+      transparent 94%,
+      var(--color-ink)
+    );
+  content: '';
+  inset: -1px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.bike-chapter-body {
+  border-top: 1px solid var(--color-line);
+  display: grid;
+  gap: 1.5rem 3rem;
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  @media (min-width: 64em) {
+    grid-template-columns: 5rem minmax(0, 1fr) minmax(0, 22rem);
+  }
+}
+
+.bike-chapter-index {
+  color: var(--color-copper);
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  font-style: italic;
+  line-height: 0.8;
+  margin: 0;
+}
+
+.bike-chapter-eyebrow {
+  color: var(--color-copper);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  margin: 0 0 0.9rem;
+  text-transform: uppercase;
+}
+
+.bike-chapter-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.bike-chapter-title a {
+  color: var(--color-sand);
+  text-decoration: none;
+}
+
+.bike-chapter-tagline {
+  color: rgb(236 227 210 / 0.85);
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+  font-style: italic;
+  line-height: 1.3;
+  margin: 1.25rem 0 0;
+  max-width: 34ch;
+}
+
+.bike-chapter-finishes {
+  align-items: center;
+  color: var(--color-sand-muted);
+  display: flex;
+  font-size: 0.8125rem;
+  gap: 0.75rem;
+  letter-spacing: 0.05em;
+  margin: 1.5rem 0 0;
+}
+
+.bike-chapter-swatch {
+  border: 1px solid rgb(236 227 210 / 0.25);
+  border-radius: 999px;
+  display: block;
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.bike-chapter-specs {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.bike-chapter-specs dt {
+  color: var(--color-sand-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.bike-chapter-specs dd {
+  color: var(--color-sand);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.35rem 0 0;
+}
+
+.bike-chapter-price {
+  align-items: baseline;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-sand);
+  display: flex;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+}
+
+.bike-chapter-price span:first-child:not(:only-child) {
+  color: var(--color-sand-muted);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.bike-chapter-cta {
+  align-items: center;
+  border: 1px solid rgb(236 227 210 / 0.4);
+  border-radius: 999px;
+  color: var(--color-sand);
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.75rem;
+  letter-spacing: 0.02em;
+  margin-top: 1.25rem;
+  min-height: 3rem;
+  padding-inline: 1.75rem;
+  text-decoration: none;
+  transition:
+    background-color 300ms,
+    border-color 300ms;
+}
+
+.bike-chapter-cta:hover {
+  background: rgb(236 227 210 / 0.08);
+  border-color: var(--color-sand);
+  text-decoration: none;
 }
 
 /* Collections index. */

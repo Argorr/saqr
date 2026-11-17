@@ -5,6 +5,8 @@ import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
 import {PageHeader} from '~/components/PageHeader';
+import {BikeChapter} from '~/components/collection/BikeChapter';
+import {BIKE_TAG, LIMITED_TAG} from '~/lib/saqr';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
@@ -71,24 +73,53 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
+  // Saqr makes two bikes: a bike collection reads as editorial chapters,
+  // everything else (accessories) as a grid.
+  const bikes = collection.products.nodes.length
+    ? collection.products.nodes.every((product) =>
+        product.tags.includes(BIKE_TAG),
+      )
+    : false;
+  // The S1 opens the collection; limited editions follow it.
+  const products = bikes
+    ? {
+        ...collection.products,
+        nodes: [...collection.products.nodes].sort(
+          (a, b) =>
+            Number(a.tags.includes(LIMITED_TAG)) -
+            Number(b.tags.includes(LIMITED_TAG)),
+        ),
+      }
+    : collection.products;
 
   return (
     <div className="page">
-      <PageHeader eyebrow="Collection" title={collection.title}>
-        {collection.description ? <p>{collection.description}</p> : null}
+      <PageHeader eyebrow="The collection" title={collection.title}>
+        {collection.description ? (
+          <p className="collection-intro">{collection.description}</p>
+        ) : null}
       </PageHeader>
       <PaginatedResourceSection<ProductItemFragment>
-        connection={collection.products}
-        resourcesClassName="product-grid"
+        connection={products}
+        resourcesClassName={bikes ? 'bike-chapters' : 'product-grid'}
         ariaLabel={`${collection.title} products`}
       >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
+        {({node: product, index}) =>
+          bikes ? (
+            <BikeChapter
+              key={product.id}
+              product={product}
+              index={index}
+              loading={index < 1 ? 'eager' : 'lazy'}
+            />
+          ) : (
+            <ProductItem
+              key={product.id}
+              product={product}
+              loading={index < 8 ? 'eager' : undefined}
+            />
+          )
+        }
       </PaginatedResourceSection>
       <Analytics.CollectionView
         data={{
@@ -111,6 +142,14 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     id
     handle
     title
+    tags
+    description
+    options(first: 3) {
+      name
+      optionValues {
+        name
+      }
+    }
     featuredImage {
       id
       altText

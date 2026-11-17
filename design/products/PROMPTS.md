@@ -45,9 +45,24 @@ Format vertical **4:5, 2048 × 2560** (1600 × 2000 minimum). Joindre `s1-copper
 
 > Use the attached image as the reference for the bike's design and finish. Create a close-up, vertical 4:5 product photograph of the same bike's mid-drive motor area: the bottom of the brushed copper down tube with the integrated battery, the black motor housing, the crank arm and the chainring, seen slightly from below at the level of the bottom bracket. Shallow depth of field, the motor in sharp focus, the rest of the frame softly falling into darkness. Pure black studio background, soft top light and a warm copper rim light along the tube edges. Photorealistic macro product photography, high detail on the metal textures and machined edges. No logos, no text, no watermark.
 
-**B. Variante atelier** (plus « fait main », légende à adapter) :
+**B. Variante atelier (retenue)** · Gemini, avec `s1-copper.jpg` en pièce jointe. Légende prévue : « Every bolt torqued by hand ».
 
-> Use the attached image as the reference for the bike's design and finish. Vertical 4:5 close-up in a dark, quiet bicycle workshop: a mechanic's hands, sleeves rolled up, tightening a bolt on the black mid-drive motor of the same brushed copper bike with a slim torque wrench. Only the hands, the tool, the motor, the crank and the bottom of the copper frame are in frame, no face. Warm low light from a single workshop lamp, copper reflections on the frame, deep black shadows, shallow depth of field. Photorealistic, high detail. No logos, no text, no watermark.
+> Use the attached photo as the reference for the bike: same brushed copper frame, same black mid-drive motor housing, same thin graphite accent lines, same black crank and chainring. Do not redesign the bike.
+>
+> Create a new photograph, vertical portrait format 4:5, as tall as possible in resolution.
+>
+> Scene: a close-up in a dark, quiet bicycle workshop. A mechanic's two hands, sleeves rolled up on the forearms, tighten a bolt on the black motor housing with a slim matte black torque wrench. The camera is low, at the height of the bottom bracket, slightly from the side.
+>
+> In frame: only the hands and forearms, the torque wrench, the motor, the crank arm, the chainring and the lower part of the copper down tube. No face, no full bike, no wheels except maybe a blurred edge of a tyre.
+>
+> Light: a single warm workshop lamp from the upper left, deep black shadows, copper reflections along the edges of the frame, soft highlights on the knuckles. Shallow depth of field: the bolt, the wrench head and the fingers are sharp, the background falls into near-black darkness with a hint of a tool wall, completely out of focus.
+>
+> Style: photorealistic, high-end editorial photography, natural skin texture, anatomically correct hands with five fingers each, clean but not polished workshop feel.
+>
+> Strictly no logos, no brand names, no text or numbers on the tool, the motor or anywhere else, no watermark.
+
+À vérifier : format 4:5 (sinon « Same image, but recompose it as a vertical 4:5 portrait. »), 1600 px de large minimum,
+cinq doigts par main, aucun texte ni logo, pièces du vélo conformes à la photo jointe.
 
 ---
 

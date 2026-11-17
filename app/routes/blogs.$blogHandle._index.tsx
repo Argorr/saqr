@@ -5,7 +5,7 @@ import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {PageHeader} from '~/components/PageHeader';
-import {formatDate} from '~/lib/saqr';
+import {formatDate, journalTopic} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `${data?.blog.title ?? 'Journal'} | Saqr`}];
@@ -72,13 +72,14 @@ export default function Blog() {
       {articles.nodes.length ? (
         <PaginatedResourceSection<ArticleItemFragment>
           connection={articles}
-          resourcesClassName="article-grid"
+          resourcesClassName="journal"
           ariaLabel={`${blog.title} articles`}
         >
           {({node: article, index}) => (
             <ArticleItem
               article={article}
               key={article.id}
+              featured={index === 0 && !articles.pageInfo.hasPreviousPage}
               loading={index < 2 ? 'eager' : 'lazy'}
             />
           )}
@@ -92,38 +93,69 @@ export default function Blog() {
   );
 }
 
+/**
+ * The newest story opens the journal with a full-width photo; the others
+ * follow as rows. Photos keep their own 16:9 frame and are never cropped.
+ */
 function ArticleItem({
   article,
+  featured,
   loading,
 }: {
   article: ArticleItemFragment;
+  featured?: boolean;
   loading?: HTMLImageElement['loading'];
 }) {
+  const url = `/blogs/${article.blog.handle}/${article.handle}`;
+  const topic = journalTopic(article.tags);
+
   return (
-    <Link
-      className="product-card"
-      prefetch="intent"
-      to={`/blogs/${article.blog.handle}/${article.handle}`}
-    >
-      <div className="product-card-media hover-zoom-frame">
-        {article.image && (
+    <article className={featured ? 'journal-feature' : 'journal-row'}>
+      <Link
+        className="journal-media"
+        prefetch="intent"
+        to={url}
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        {article.image ? (
           <Image
-            alt={article.image.altText || article.title}
-            aspectRatio="1/1"
-            className="hover-zoom"
+            alt=""
             data={article.image}
             loading={loading}
-            sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
+            sizes={
+              featured
+                ? '(min-width: 1280px) 1200px, 100vw'
+                : '(min-width: 48em) 45vw, 100vw'
+            }
           />
-        )}
+        ) : null}
+      </Link>
+      <div className="journal-text">
+        <div className="journal-heading">
+          {topic ? <p className="page-eyebrow">{topic}</p> : null}
+          <h2 className="journal-title">
+            <Link prefetch="intent" to={url}>
+              {article.title}
+            </Link>
+          </h2>
+        </div>
+        <div className="journal-body">
+          {article.excerpt ? (
+            <p className="journal-excerpt">{article.excerpt}</p>
+          ) : null}
+          <p className="journal-meta">
+            <time dateTime={article.publishedAt}>
+              {formatDate(article.publishedAt)}
+            </time>
+            {article.author?.name ? <> · {article.author.name}</> : null}
+          </p>
+          <Link className="account-link" prefetch="intent" to={url}>
+            Read the story <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
-      <div className="product-card-body">
-        <h2 className="product-card-title">{article.title}</h2>
-        <time className="product-card-price" dateTime={article.publishedAt}>
-          {formatDate(article.publishedAt)}
-        </time>
-      </div>
-    </Link>
+    </article>
   );
 }
 
@@ -170,7 +202,7 @@ const BLOGS_QUERY = `#graphql
     author: authorV2 {
       name
     }
-    contentHtml
+    excerpt
     handle
     id
     image {
@@ -181,6 +213,7 @@ const BLOGS_QUERY = `#graphql
       height
     }
     publishedAt
+    tags
     title
     blog {
       handle

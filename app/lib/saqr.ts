@@ -79,3 +79,19 @@ export function formatStatus(status?: string | null) {
   const words = status.toLowerCase().replace(/_/g, ' ');
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
+
+/**
+ * Journal topics shown above each story, in order of priority. Shopify
+ * returns tags alphabetically, so the first tag is not the topic.
+ */
+const JOURNAL_TOPICS: Record<string, string> = {
+  technology: 'Technology',
+  engineering: 'Engineering',
+  sustainability: 'Sustainability',
+  brand: 'Brand',
+};
+
+export function journalTopic(tags: string[]) {
+  const key = Object.keys(JOURNAL_TOPICS).find((t) => tags.includes(t));
+  return key ? JOURNAL_TOPICS[key] : null;
+}

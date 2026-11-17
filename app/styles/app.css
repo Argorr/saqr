@@ -1370,11 +1370,26 @@ label.configurator-card:has(:focus-visible) {
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
-  transition: background-color 300ms;
+  /* The hover colour is a layer that fades in, not a background-color
+     transition: Firefox repainted the rounded ends badly for a frame while
+     the colour changed. An opacity fade is composited, nothing is redrawn. */
+  isolation: isolate;
+  position: relative;
 }
 
-.configurator-submit:hover:not(:disabled) {
+.configurator-submit::before {
   background: var(--color-copper-strong);
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 300ms;
+  z-index: -1;
+}
+
+.configurator-submit:hover:not(:disabled)::before {
+  opacity: 1;
 }
 
 .configurator-submit:disabled {

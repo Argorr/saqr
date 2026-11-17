@@ -6,7 +6,14 @@ import {PageHeader} from '~/components/PageHeader';
 import {formatDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `${data?.article.title ?? 'Journal'} | Saqr`}];
+  const article = data?.article;
+  return [
+    {title: `${article?.title ?? 'Journal'} | Saqr`},
+    {
+      name: 'description',
+      content: article?.seo?.description || article?.excerpt || '',
+    },
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -111,6 +118,7 @@ const ARTICLE_QUERY = `#graphql
         handle
         title
         contentHtml
+        excerpt
         publishedAt
         author: authorV2 {
           name

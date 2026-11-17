@@ -2,9 +2,17 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {PageHeader} from '~/components/PageHeader';
+import {SITE_DESCRIPTION} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `${data?.page.title ?? 'Page'} | Saqr`}];
+  const page = data?.page;
+  return [
+    {title: `${page?.title ?? 'Page'} | Saqr`},
+    {
+      name: 'description',
+      content: page?.seo?.description || page?.bodySummary || SITE_DESCRIPTION,
+    },
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -82,6 +90,7 @@ const PAGE_QUERY = `#graphql
       id
       title
       body
+      bodySummary
       seo {
         description
         title

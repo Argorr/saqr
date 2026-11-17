@@ -5,10 +5,16 @@ import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {PageHeader} from '~/components/PageHeader';
-import {formatDate, journalTopic} from '~/lib/saqr';
+import {JOURNAL_DESCRIPTION, formatDate, journalTopic} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `${data?.blog.title ?? 'Journal'} | Saqr`}];
+  return [
+    {title: `${data?.blog.title ?? 'Journal'} | Saqr`},
+    {
+      name: 'description',
+      content: data?.blog.seo?.description || JOURNAL_DESCRIPTION,
+    },
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {

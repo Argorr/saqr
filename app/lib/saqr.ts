@@ -63,6 +63,12 @@ export const NAV_LINKS = [
   {label: 'Journal', to: '/blogs/journal'},
 ];
 
+/** Fallback meta descriptions, for pages Shopify leaves without one. */
+export const SITE_DESCRIPTION =
+  'Saqr builds electric bikes for the city by hand, to order, in small numbers.';
+export const JOURNAL_DESCRIPTION =
+  'Stories from the Saqr atelier: how the S1 is engineered, tested and built to last.';
+
 export const TEST_RIDE_LINK = {label: 'Book a test ride', to: '/#test-ride'};
 
 /** Dates for the journal and orders, e.g. "17 November 2026". */

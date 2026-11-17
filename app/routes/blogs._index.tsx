@@ -4,11 +4,15 @@ import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
 import {PageHeader} from '~/components/PageHeader';
+import {JOURNAL_DESCRIPTION} from '~/lib/saqr';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Journal | Saqr'}];
+  return [
+    {title: 'Journal | Saqr'},
+    {name: 'description', content: JOURNAL_DESCRIPTION},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {

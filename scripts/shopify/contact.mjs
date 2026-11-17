@@ -40,6 +40,22 @@ const body = `
 <p>Saqr is a fictional brand, designed and built as a portfolio piece. The addresses above lead nowhere and no bike will be shipped, but the storefront, the configurator and the checkout run on a real Shopify store.</p>
 `;
 
-writeFileSync(file, JSON.stringify({id, page: {body: body.trim()}}, null, 2));
+// Read by the storefront as page.seo.description (the meta description).
+const description =
+  'Write to the Saqr atelier about orders, service or press, or visit a showroom in Paris, London, Milan or Dubai.';
+
+const page = {
+  body: body.trim(),
+  metafields: [
+    {
+      namespace: 'global',
+      key: 'description_tag',
+      type: 'single_line_text_field',
+      value: description,
+    },
+  ],
+};
+
+writeFileSync(file, JSON.stringify({id, page}, null, 2));
 console.log(file);
 /* eslint-enable no-console */

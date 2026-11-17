@@ -1,0 +1,17 @@
+// Cloudflare Workers hosting: the public address of the portfolio.
+// Oxygen (Shopify) stays private on a development store, so the same
+// Hydrogen build is served from Workers: the server bundle as the Worker,
+// dist/client as static assets. Deploy with `npm run deploy:cf`.
+// Secrets (the .env values) are uploaded with `wrangler secret bulk`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "saqr",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2025-04-01",
+  "assets": {
+    "directory": "dist/client",
+  },
+  "observability": {
+    "enabled": true,
+  },
+}

@@ -98,12 +98,13 @@ export function journalTopic(tags: string[]) {
 
 /**
  * Atelier section photo, stored in Shopify Files (not tied to a product).
- * Source: design/products/atelier-drive.jpg, prompt in PROMPTS.md (7 B).
+ * Source: design/products/atelier-drive.jpg, prompt in PROMPTS.md (7 B2),
+ * upscaled 2x with Upscayl.
  */
 export const ATELIER_PHOTO = {
-  url: 'https://cdn.shopify.com/s/files/1/0973/7093/1466/files/atelier-drive.jpg?v=1794906700',
-  width: 928,
-  height: 1152,
+  url: 'https://cdn.shopify.com/s/files/1/0973/7093/1466/files/atelier-drive-v2.jpg?v=1794908739',
+  width: 1856,
+  height: 2304,
   altText:
-    'A mechanic’s hands working on the motor of a copper Saqr S1 in the atelier',
+    'A mechanic’s hands tightening the crank bolt of a copper Saqr S1 with a torque wrench',
 };

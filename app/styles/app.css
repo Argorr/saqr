@@ -2166,8 +2166,14 @@ button.header-icon.reset {
 */
 
 /* A fine film grain over the whole page, so the blacks read as material
-   rather than screen. A static tiled PNG at low opacity: no blend mode,
-   nothing animated, cheap to composite (Firefox included). */
+   rather than screen. A static tiled PNG at low opacity, no blend mode.
+   It scrolls with the page (absolute, not fixed): with a fixed layer on
+   top, Firefox repainted hovered elements badly (the reserve button lost
+   its rounded ends on hover). */
+body {
+  position: relative;
+}
+
 body::after {
   background: url('/textures/grain.png') repeat;
   background-size: 256px 256px;
@@ -2175,7 +2181,7 @@ body::after {
   inset: 0;
   opacity: 0.045;
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   z-index: 100;
 }
 

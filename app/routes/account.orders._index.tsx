@@ -23,11 +23,14 @@ import type {
   OrderItemFragment,
 } from 'customer-accountapi.generated';
 import {formatDate, formatStatus} from '~/lib/saqr';
+import {buildProgress} from '~/lib/build';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
 type OrdersLoaderData = {
   customer: CustomerOrdersFragment;
   filters: OrderFilterParams;
+  /** Build stage label per bike order id, computed on the server. */
+  stages: Record<string, string>;
 };
 
 export const meta: Route.MetaFunction = () => {
@@ -56,18 +59,24 @@ export async function loader({request, context}: Route.LoaderArgs) {
     throw Error('Customer orders not found');
   }
 
-  return {customer: data.customer, filters};
+  const stages: Record<string, string> = {};
+  for (const order of data.customer.orders.nodes) {
+    const progress = buildProgress(order);
+    if (progress) stages[order.id] = progress.current.label;
+  }
+
+  return {customer: data.customer, filters, stages};
 }
 
 export default function Orders() {
-  const {customer, filters} = useLoaderData<OrdersLoaderData>();
+  const {customer, filters, stages} = useLoaderData<OrdersLoaderData>();
   const {orders} = customer;
 
   return (
     <section className="account-section">
       <h2 className="account-section-title">Orders</h2>
       <OrderSearchForm currentFilters={filters} />
-      <OrdersTable orders={orders} filters={filters} />
+      <OrdersTable orders={orders} filters={filters} stages={stages} />
     </section>
   );
 }
@@ -75,9 +84,11 @@ export default function Orders() {
 function OrdersTable({
   orders,
   filters,
+  stages,
 }: {
   orders: CustomerOrdersFragment['orders'];
   filters: OrderFilterParams;
+  stages: Record<string, string>;
 }) {
   const hasFilters = !!(filters.name || filters.confirmationNumber);
 
@@ -88,7 +99,9 @@ function OrdersTable({
           connection={orders}
           resourcesClassName="order-list"
         >
-          {({node: order}) => <OrderItem key={order.id} order={order} />}
+          {({node: order}) => (
+            <OrderItem key={order.id} order={order} stage={stages[order.id]} />
+          )}
         </PaginatedResourceSection>
       ) : (
         <EmptyOrders hasFilters={hasFilters} />
@@ -199,7 +212,7 @@ function OrderSearchForm({
   );
 }
 
-function OrderItem({order}: {order: OrderItemFragment}) {
+function OrderItem({order, stage}: {order: OrderItemFragment; stage?: string}) {
   const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
   return (
     <Link className="order-row" to={`/account/orders/${btoa(order.id)}`}>
@@ -208,7 +221,9 @@ function OrderItem({order}: {order: OrderItemFragment}) {
         {formatDate(order.processedAt)}
       </time>
       <span className="order-row-status">
-        {formatStatus(fulfillmentStatus ?? order.financialStatus)}
+        {order.cancelledAt
+          ? 'Cancelled'
+          : (stage ?? formatStatus(fulfillmentStatus ?? order.financialStatus))}
       </span>
       <Money className="order-row-total" data={order.totalPrice} />
     </Link>

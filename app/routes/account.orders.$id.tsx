@@ -7,6 +7,8 @@ import type {
   OrderQuery,
 } from 'customer-accountapi.generated';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
+import {BIKE_PRODUCT_TYPE, buildProgress, lineSerial} from '~/lib/build';
+import {BuildTracker} from '~/components/account/BuildTracker';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Order ${data?.order?.name ?? ''} | Saqr`}];
@@ -66,12 +68,20 @@ export async function loader({params, context}: Route.LoaderArgs) {
         ).percentage
       : null;
 
+  // Bike orders get a build tracker instead of Shopify's status page link.
+  const progress = buildProgress(order);
+  const bikes = lineItems
+    .filter((line) => line.productType === BIKE_PRODUCT_TYPE)
+    .map((line) => ({title: line.title, serial: lineSerial(line)}));
+
   return {
     order,
     lineItems,
     discountValue,
     discountPercentage,
     fulfillmentStatus,
+    progress,
+    bikes,
   };
 }
 
@@ -82,6 +92,8 @@ export default function OrderRoute() {
     discountValue,
     discountPercentage,
     fulfillmentStatus,
+    progress,
+    bikes,
   } = useLoaderData<typeof loader>();
   const hasDiscount = Boolean(
     (discountValue && Number(discountValue.amount)) || discountPercentage,
@@ -98,8 +110,14 @@ export default function OrderRoute() {
         {order.confirmationNumber ? (
           <> · Confirmation {order.confirmationNumber}</>
         ) : null}
-        {fulfillmentStatus ? <> · {formatStatus(fulfillmentStatus)}</> : null}
+        {order.cancelledAt ? (
+          <> · Cancelled</>
+        ) : progress ? null : fulfillmentStatus ? (
+          <> · {formatStatus(fulfillmentStatus)}</>
+        ) : null}
       </p>
+
+      {progress ? <BuildTracker progress={progress} bikes={bikes} /> : null}
 
       <table className="order-table">
         <thead>
@@ -170,14 +188,17 @@ export default function OrderRoute() {
             <p>No delivery address.</p>
           )}
         </div>
-        <a
-          className="button button-ghost"
-          target="_blank"
-          href={order.statusPageUrl}
-          rel="noreferrer"
-        >
-          Track this order <span aria-hidden="true">↗</span>
-        </a>
+        {/* Accessory-only orders have no build: Shopify's page tracks the parcel. */}
+        {progress || order.cancelledAt ? null : (
+          <a
+            className="button button-ghost"
+            target="_blank"
+            href={order.statusPageUrl}
+            rel="noreferrer"
+          >
+            Track delivery <span aria-hidden="true">↗</span>
+          </a>
+        )}
       </div>
     </section>
   );
@@ -208,6 +229,9 @@ function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
             <p className="order-line-title">{lineItem.title}</p>
             {lineItem.variantTitle ? (
               <p className="order-line-variant">{lineItem.variantTitle}</p>
+            ) : null}
+            {lineSerial(lineItem) ? (
+              <p className="order-line-serial">{lineSerial(lineItem)}</p>
             ) : null}
           </div>
         </div>

@@ -99,12 +99,35 @@ export function formatSerial(n: number) {
   return `No. ${String(n).padStart(2, '0')} / ${SERIES_SIZE}`;
 }
 
-/** What every bike comes with, listed under the reserve button. */
-export const BIKE_PROMISE = [
-  `Built by hand to your configuration, ready in ${BUILD_TIME}`,
-  'Delivered and fitted to you at home by an atelier technician',
-  'Lifetime frame warranty and a first service at three months',
-];
+/** Days from order to delivery at home, matching BUILD_TIME. */
+export const BUILD_DAYS = 42;
+
+/** ISO date a bike ordered at `from` is expected at home. */
+export function readyDate(from = Date.now()) {
+  return new Date(from + BUILD_DAYS * 24 * 60 * 60 * 1000).toISOString();
+}
+
+/** "30 December" */
+export function formatDayMonth(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date(iso));
+}
+
+/**
+ * What every bike comes with, listed under the reserve button. With the
+ * expected date (computed on the server), the first promise names it.
+ */
+export function bikePromise(readyBy?: string | null) {
+  return [
+    readyBy
+      ? `Built by hand to your configuration. Order today, at home around ${formatDayMonth(readyBy)}`
+      : `Built by hand to your configuration, ready in ${BUILD_TIME}`,
+    'Delivered and fitted to you at home by an atelier technician',
+    'Lifetime frame warranty and a first service at three months',
+  ];
+}
 
 /**
  * Site navigation. Saqr sells two bikes, so the menu is curated here rather

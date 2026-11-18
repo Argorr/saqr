@@ -9,7 +9,7 @@ import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
 import {
   BATTERIES,
-  BIKE_PROMISE,
+  bikePromise,
   BUILD_TIME,
   FINISHES,
   LIMITED_TAG,
@@ -41,12 +41,15 @@ export function ProductConfigurator({
   selectedVariant,
   addons,
   isBike,
+  readyBy,
 }: {
   product: ProductFragment;
   productOptions: MappedProductOptions[];
   selectedVariant: Variant;
   addons: ProductAddonFragment[];
   isBike: boolean;
+  /** Expected delivery date for a bike ordered today (server time). */
+  readyBy?: string | null;
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
@@ -247,7 +250,7 @@ export function ProductConfigurator({
 
         {isBike ? (
           <ul className="promise-list">
-            {BIKE_PROMISE.map((line) => (
+            {bikePromise(readyBy).map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ul>

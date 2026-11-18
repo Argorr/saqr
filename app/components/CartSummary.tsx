@@ -3,6 +3,8 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher} from 'react-router';
+import {formatDayMonth, readyDate} from '~/lib/saqr';
+import {BIKE_PRODUCT_TYPE} from '~/lib/build';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -18,6 +20,9 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const giftCardHeadingId = useId();
   const giftCardInputId = useId();
   const subtotal = cart?.cost?.subtotalAmount ?? optimisticSubtotal(cart);
+  const hasBike = cart?.lines?.nodes.some(
+    (line) => line.merchandise.product.productType === BIKE_PRODUCT_TYPE,
+  );
 
   return (
     <div aria-labelledby={summaryId} className={className}>
@@ -26,6 +31,13 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         <dt>Subtotal</dt>
         <dd>{subtotal ? <Money data={subtotal} /> : '-'}</dd>
       </dl>
+      {hasBike ? (
+        // The date depends on today: server and browser may differ by a day.
+        <p className="cart-delivery-note" suppressHydrationWarning>
+          Built to order. Expected at home around {formatDayMonth(readyDate())},
+          delivered and fitted free.
+        </p>
+      ) : null}
       <CartDiscounts
         discountCodes={cart?.discountCodes}
         discountsHeadingId={discountsHeadingId}

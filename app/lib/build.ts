@@ -1,4 +1,4 @@
-import {SERIAL_ATTRIBUTE} from '~/lib/saqr';
+import {BUILD_DAYS, SERIAL_ATTRIBUTE} from '~/lib/saqr';
 
 /**
  * Build tracker for bike orders (account order pages).
@@ -19,7 +19,7 @@ const STAGES = [
   {key: 'ordered', label: 'Ordered', day: 0},
   {key: 'atelier', label: 'In the atelier', day: 3},
   {key: 'checks', label: 'Final checks', day: 35},
-  {key: 'delivered', label: 'Delivered and fitted', day: 42},
+  {key: 'delivered', label: 'Delivered and fitted', day: BUILD_DAYS},
 ] as const;
 
 export type BuildStage = {

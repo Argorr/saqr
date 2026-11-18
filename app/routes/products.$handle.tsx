@@ -10,7 +10,7 @@ import {
 } from '@shopify/hydrogen';
 import {ProductConfigurator} from '~/components/product/ProductConfigurator';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {BIKE_SPECS, BIKE_TAG} from '~/lib/saqr';
+import {BIKE_SPECS, BIKE_TAG, readyDate} from '~/lib/saqr';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
@@ -68,6 +68,8 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     product,
     isBike,
     addons: isBike ? (addons?.products.nodes ?? []) : [],
+    // On the server, so the date is the same in the HTML and after hydration.
+    readyBy: isBike ? readyDate() : null,
   };
 }
 
@@ -84,7 +86,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product, isBike, addons} = useLoaderData<typeof loader>();
+  const {product, isBike, addons, readyBy} = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -110,6 +112,7 @@ export default function Product() {
         selectedVariant={selectedVariant}
         addons={addons}
         isBike={isBike}
+        readyBy={readyBy}
       />
 
       <section

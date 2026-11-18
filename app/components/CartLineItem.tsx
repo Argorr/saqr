@@ -129,6 +129,10 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const {id: lineId, quantity, isOptimistic} = line;
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
   const nextQuantity = Number((quantity + 1).toFixed(0));
+  // A numbered Shaheen is one bike: its line can't go above 1.
+  const numbered = line.attributes?.some(
+    (attribute) => attribute.key === SERIAL_ATTRIBUTE,
+  );
 
   return (
     <div className="cart-line-quantity">
@@ -149,7 +153,7 @@ function CartLineQuantity({line}: {line: CartLine}) {
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
-          disabled={!!isOptimistic}
+          disabled={!!isOptimistic || numbered}
         >
           <span>&#43;</span>
         </button>

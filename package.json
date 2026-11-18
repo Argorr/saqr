@@ -11,7 +11,7 @@
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen",
-    "deploy:cf": "shopify hydrogen build && wrangler deploy"
+    "deploy:cf": "node scripts/deploy.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

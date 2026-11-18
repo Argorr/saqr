@@ -17,7 +17,6 @@ import {
   SIZES,
   formatSerial,
 } from '~/lib/saqr';
-import {productTransitionName} from '~/lib/transitions';
 import {SerialPicker, firstFreeSerial} from './SerialPicker';
 
 type Variant = ProductFragment['selectedOrFirstAvailableVariant'];
@@ -303,11 +302,6 @@ function Stage({
             <Image
               key={key}
               data={image}
-              style={
-                selected
-                  ? {viewTransitionName: productTransitionName(product.handle)}
-                  : undefined
-              }
               alt={image.altText || product.title}
               sizes="(min-width: 64em) 60vw, 100vw"
               loading={selected ? 'eager' : 'lazy'}

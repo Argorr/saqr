@@ -8,7 +8,6 @@ import {
   LIMITED_TAG,
   SERIES_SIZE,
 } from '~/lib/saqr';
-import {useCardTransition} from '~/lib/transitions';
 
 /**
  * One bike of the collection, as an editorial chapter rather than a card:
@@ -25,7 +24,6 @@ export function BikeChapter({
   loading?: 'eager' | 'lazy';
 }) {
   const to = `/products/${product.handle}`;
-  const transition = useCardTransition(to, product.handle);
   const chapter = BIKE_CHAPTERS[product.handle];
   const limited = product.tags.includes(LIMITED_TAG);
   const image = product.featuredImage;
@@ -42,9 +40,7 @@ export function BikeChapter({
       <Link
         to={to}
         prefetch="intent"
-        viewTransition
         className="bike-chapter-media"
-        style={transition}
         tabIndex={-1}
         aria-hidden="true"
       >
@@ -70,7 +66,7 @@ export function BikeChapter({
               : `Built to order · ${BUILD_TIME}`}
           </p>
           <h2 id={`bike-${product.id}`} className="bike-chapter-title">
-            <Link to={to} prefetch="intent" viewTransition>
+            <Link to={to} prefetch="intent">
               {product.title}
             </Link>
           </h2>
@@ -112,12 +108,7 @@ export function BikeChapter({
             {fromPrice ? <span>From</span> : null}
             <Money as="span" data={minVariantPrice} withoutTrailingZeros />
           </p>
-          <Link
-            to={to}
-            prefetch="intent"
-            viewTransition
-            className="bike-chapter-cta"
-          >
+          <Link to={to} prefetch="intent" className="bike-chapter-cta">
             {limited ? 'Reserve a number' : 'Configure yours'}
             <span aria-hidden="true">→</span>
           </Link>

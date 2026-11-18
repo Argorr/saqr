@@ -1,7 +1,6 @@
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {HomeAccessoryFragment} from 'storefrontapi.generated';
-import {useCardTransition} from '~/lib/transitions';
 import {SectionIntro} from './SectionIntro';
 
 /** The accessories collection, from Shopify. */
@@ -41,21 +40,12 @@ export function Accessories({products}: {products: HomeAccessoryFragment[]}) {
   );
 }
 
-/** One accessory card; its photo flies to the product page on click. */
+/** One accessory card, linking to its product page. */
 function AccessoryCard({product}: {product: HomeAccessoryFragment}) {
   const to = `/products/${product.handle}`;
-  const transition = useCardTransition(to, product.handle);
   return (
-    <Link
-      to={to}
-      prefetch="intent"
-      viewTransition
-      className="group block hover:no-underline"
-    >
-      <div
-        className="hover-zoom-frame aspect-square overflow-hidden rounded-sm bg-ink"
-        style={transition}
-      >
+    <Link to={to} prefetch="intent" className="group block hover:no-underline">
+      <div className="hover-zoom-frame aspect-square overflow-hidden rounded-sm bg-ink">
         {product.featuredImage ? (
           <Image
             data={product.featuredImage}

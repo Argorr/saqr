@@ -2142,8 +2142,8 @@ button.header-icon.reset {
 
 /*
 * --------------------------------------------------
-* Finishing touches: grain, serif accents, page
-* transitions, logo intro, Shaheen serial numbers
+* Finishing touches: grain, serif accents, logo
+* intro, Shaheen serial numbers
 * --------------------------------------------------
 */
 
@@ -2165,26 +2165,6 @@ body::after {
   pointer-events: none;
   position: absolute;
   z-index: 100;
-}
-
-/* Page transitions: the product photo flies from its card to the product
-   page (view-transition-name set in ProductItem / Accessories / Stage). */
-::view-transition-group(*) {
-  animation-duration: 550ms;
-  animation-timing-function: var(--ease-dive);
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 300ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
 }
 
 /* Logo intro, once per visit (root.tsx sets data-intro on <html>):

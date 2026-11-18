@@ -2,7 +2,6 @@ import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {HomeShaheenFragment} from 'storefrontapi.generated';
 import {SERIES_SIZE} from '~/lib/saqr';
-import {useCardTransition} from '~/lib/transitions';
 
 /**
  * The S1 Shaheen, a numbered series of 99. The bikes left are counted from
@@ -12,7 +11,6 @@ import {useCardTransition} from '~/lib/transitions';
 export function LimitedEdition({product}: {product: HomeShaheenFragment}) {
   const image = product.featuredImage;
   const to = `/products/${product.handle}`;
-  const transition = useCardTransition(to, product.handle);
   const stockKnown = product.variants.nodes.every(
     (variant) => typeof variant.quantityAvailable === 'number',
   );
@@ -53,10 +51,7 @@ export function LimitedEdition({product}: {product: HomeShaheenFragment}) {
         </div>
 
         {image ? (
-          <div
-            className="relative mt-[clamp(2rem,5vw,3.5rem)] aspect-[16/9]"
-            style={transition}
-          >
+          <div className="relative mt-[clamp(2rem,5vw,3.5rem)] aspect-[16/9]">
             <Image
               data={image}
               alt={image.altText || product.title}
@@ -110,7 +105,6 @@ export function LimitedEdition({product}: {product: HomeShaheenFragment}) {
           <Link
             to={to}
             prefetch="intent"
-            viewTransition
             className="inline-flex min-h-12 items-center gap-3 rounded-full border border-sand/40 px-7 text-sm font-semibold tracking-wide text-sand relative fade-hover [--hover-bg:rgb(236_227_210/0.1)] [--hover-border:var(--color-sand)] hover:no-underline"
           >
             {soldOut ? 'See the Shaheen' : 'Reserve a number'}

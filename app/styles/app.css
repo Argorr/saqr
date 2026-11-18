@@ -2354,6 +2354,9 @@ input:disabled + .serial-cell {
   pointer-events: none;
   position: absolute;
   transition: opacity 300ms var(--ease-dive);
+  /* Own compositing layer from the start: Firefox no longer repaints the
+     rounded shape when the fade begins. */
+  will-change: opacity;
   z-index: -1;
 }
 

@@ -41,6 +41,11 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw redirect('/collections');
   }
 
+  // Shopify's default 'Home page' collection is not a real range.
+  if (handle === 'frontpage') {
+    throw redirect('/collections/all', 301);
+  }
+
   const [{collection}] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
       variables: {handle, ...paginationVariables},

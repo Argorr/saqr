@@ -1334,12 +1334,18 @@ aside main {
   text-decoration: none;
 }
 
-.collection-card img {
-  border-radius: 0;
-  height: auto;
+.collection-card-media {
+  background: #000;
   margin: -2rem -2rem 0;
-  max-width: none;
-  width: calc(100% + 4rem);
+}
+
+.collection-card-media img {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
 }
 
 .collection-card-title {

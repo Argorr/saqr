@@ -78,20 +78,27 @@ function CollectionItem({
   collection: CollectionFragment;
   index: number;
 }) {
+  const image =
+    collection.image ?? collection.products.nodes[0]?.featuredImage ?? null;
+
   return (
     <Link
       className="collection-card"
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection.image ? (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="16/9"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 600px, 100vw"
-        />
+      {image ? (
+        // The wrapper bleeds to the card's edges: Image sets its own
+        // inline width (100%), so it can't do it itself.
+        <div className="collection-card-media">
+          <Image
+            alt=""
+            aspectRatio="16/9"
+            data={image}
+            loading={index < 3 ? 'eager' : undefined}
+            sizes="(min-width: 45em) 600px, 100vw"
+          />
+        </div>
       ) : null}
       <h2 className="collection-card-title">{collection.title}</h2>
       <span className="collection-card-link">
@@ -112,6 +119,18 @@ const COLLECTIONS_QUERY = `#graphql
       altText
       width
       height
+    }
+    # Shown when the collection has no image of its own.
+    products(first: 1) {
+      nodes {
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
     }
   }
   query StoreCollections(

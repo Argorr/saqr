@@ -70,6 +70,13 @@ export function links() {
   ];
 }
 
+/** Only used when an error reaches the root: pages set their own titles. */
+export const meta: Route.MetaFunction = ({error}) => {
+  if (!error) return [];
+  const notFound = isRouteErrorResponse(error) && error.status === 404;
+  return [{title: notFound ? 'Page not found | Saqr' : 'Something broke | Saqr'}];
+};
+
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);

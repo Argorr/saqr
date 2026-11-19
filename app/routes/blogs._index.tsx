@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
@@ -42,6 +42,11 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
+
+  // A single blog (the Journal): a list of one link is a dead end, go to it.
+  if (blogs.nodes.length === 1 && !blogs.pageInfo.hasNextPage) {
+    throw redirect(`/blogs/${blogs.nodes[0].handle}`, 301);
+  }
 
   return {blogs};
 }

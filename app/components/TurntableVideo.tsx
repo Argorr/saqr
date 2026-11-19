@@ -67,7 +67,9 @@ export function TurntableVideo() {
   return (
     <section
       ref={sectionRef}
-      className="turntable relative -mx-4 bg-ink !p-0"
+      // overflow-x-clip: the edge gradient (-inset-px) would add 1px of
+      // sideways scroll on phones.
+      className="turntable relative -mx-4 overflow-x-clip bg-ink !p-0"
       aria-labelledby="turntable-title"
     >
       <div className="relative mx-auto aspect-video w-full max-w-[calc((100svh-var(--header-height))*16/9)]">

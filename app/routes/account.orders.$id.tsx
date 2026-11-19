@@ -159,7 +159,7 @@ export default function OrderRoute() {
           {order.shippingLine ? (
             <tr>
               <th scope="row" colSpan={3}>
-                Delivery · {order.shippingLine.title}
+                {order.shippingLine.title}
               </th>
               <td>
                 {Number(order.totalShipping.amount) === 0 ? (

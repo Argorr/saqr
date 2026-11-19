@@ -37,6 +37,8 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
           Built to order. Expected at home around {formatDayMonth(readyDate())},
           delivered and fitted free.
         </p>
+      ) : cart?.lines?.nodes.length ? (
+        <p className="cart-delivery-note">Free delivery on every order.</p>
       ) : null}
       <CartDiscounts
         discountCodes={cart?.discountCodes}

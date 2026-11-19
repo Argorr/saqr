@@ -39,8 +39,12 @@ export function HeroVideo() {
       '(prefers-reduced-motion: reduce)',
     ).matches;
     if (reduceMotion) return;
-    video.play().catch(() => {
-      // Autoplay refused (data saver, low power mode): keep the still frame.
+    // The film waits for the headline's first paint, so its download never
+    // competes with it; the still frame is on screen in the meantime.
+    return afterFirstPaint(() => {
+      video.play().catch(() => {
+        // Autoplay refused (data saver, low power mode): keep the still frame.
+      });
     });
   }, []);
 
@@ -157,6 +161,45 @@ export function HeroVideo() {
       </div>
     </section>
   );
+}
+
+/**
+ * Runs `start` once the page's largest paint has happened (Chrome, Edge), or
+ * after the load event where that is not reported (Firefox, Safari).
+ * Returns a cleanup function.
+ */
+function afterFirstPaint(start: () => void) {
+  let done = false;
+  const run = () => {
+    if (done) return;
+    done = true;
+    start();
+  };
+
+  if (
+    typeof PerformanceObserver !== 'undefined' &&
+    PerformanceObserver.supportedEntryTypes?.includes('largest-contentful-paint')
+  ) {
+    const observer = new PerformanceObserver(() => {
+      observer.disconnect();
+      run();
+    });
+    observer.observe({type: 'largest-contentful-paint', buffered: true});
+    return () => {
+      done = true;
+      observer.disconnect();
+    };
+  }
+
+  if (document.readyState === 'complete') {
+    run();
+    return () => {};
+  }
+  window.addEventListener('load', run, {once: true});
+  return () => {
+    done = true;
+    window.removeEventListener('load', run);
+  };
 }
 
 function PauseIcon() {

@@ -2163,9 +2163,12 @@ details[open] > .address-summary .address-edit {
   }
 }
 
+/* Starts at 0.01, not 0: invisible to the eye, but Chrome only counts a paint
+   for Largest Contentful Paint once opacity is above 0, so the headline is
+   measured when it first renders instead of when its fade has begun. */
 @keyframes hero-rise {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(1.5rem);
   }
   to {

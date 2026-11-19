@@ -88,7 +88,8 @@ export function TurntableVideo() {
           loop
           playsInline
           preload="none"
-          poster={MEDIA.poster}
+          // No poster attribute: the lazy <img> above already shows the still,
+          // and a poster would be fetched at once, even far below the fold.
           aria-label="The Saqr S1 turning on a turntable"
           onPlaying={() => {
             setPlaying(true);

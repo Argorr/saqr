@@ -17,6 +17,8 @@ import {HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
+import manropeFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import unboundedFont from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
 import {PageLayout} from './components/PageLayout';
 import {PageHeader} from './components/PageHeader';
 
@@ -139,6 +141,22 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        {/* The hero text needs both fonts: fetch them alongside the
+            stylesheets instead of after them. Same files as the @font-face. */}
+        <link
+          rel="preload"
+          href={manropeFont}
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href={unboundedFont}
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>

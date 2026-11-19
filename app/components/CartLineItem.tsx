@@ -34,66 +34,79 @@ export function CartLineItem({
   const {close} = useAside();
   const lineItemChildren = childrenMap[id];
   const childrenLabelId = `cart-line-children-${id}`;
+  const closeAside = () => {
+    if (layout === 'aside') close();
+  };
+  // "Copper · M · 540 Wh": the values speak for themselves. A lone option
+  // keeps its name ("Size M"), or a bare "M" would mean nothing.
+  const shownOptions = selectedOptions.filter(
+    (option) => option.value !== 'Default Title',
+  );
+  const options =
+    shownOptions.length === 1
+      ? `${shownOptions[0].name} ${shownOptions[0].value}`
+      : shownOptions.map((option) => option.value).join(' · ');
+  // The Shaheen serial number chosen in the configurator.
+  const serial = line.attributes?.find(
+    (attribute) => attribute.key === SERIAL_ATTRIBUTE,
+  )?.value;
 
   return (
     <li className="cart-line">
       <div className="cart-line-inner">
-        {image && (
-          <Image
-            alt={title}
-            aspectRatio="1/1"
-            data={image}
-            height={100}
-            loading="lazy"
-            width={100}
-          />
-        )}
+        <Link
+          prefetch="intent"
+          to={lineItemUrl}
+          onClick={closeAside}
+          className="cart-line-media"
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          {image && (
+            <Image
+              alt=""
+              aspectRatio="1/1"
+              data={image}
+              height={120}
+              loading="lazy"
+              width={120}
+              className="cart-line-image"
+            />
+          )}
+        </Link>
 
-        <div>
-          <Link
-            prefetch="intent"
-            to={lineItemUrl}
-            onClick={() => {
-              if (layout === 'aside') {
-                close();
-              }
-            }}
-          >
-            <p>
-              <strong>{product.title}</strong>
+        <div className="cart-line-body">
+          <div className="cart-line-head">
+            <Link
+              prefetch="intent"
+              to={lineItemUrl}
+              onClick={closeAside}
+              className="cart-line-title"
+            >
+              {product.title}
+            </Link>
+            {/* Optimistic lines have no cost yet: show the variant price
+                meanwhile, so the price does not pop in a moment later. */}
+            <div className="cart-line-price">
+              <ProductPrice
+                price={
+                  line.cost?.totalAmount ?? {
+                    amount: String(
+                      Number(merchandise.price.amount) * (line.quantity || 1),
+                    ),
+                    currencyCode: merchandise.price.currencyCode,
+                  }
+                }
+              />
+            </div>
+          </div>
+          {options ? (
+            <p className="cart-line-options">
+              <span className="sr-only">{title}: </span>
+              {options}
             </p>
-          </Link>
-          {/* Optimistic lines have no cost yet: show the variant price
-              meanwhile, so the price does not pop in a moment later. */}
-          <ProductPrice
-            price={
-              line.cost?.totalAmount ?? {
-                amount: String(
-                  Number(merchandise.price.amount) * (line.quantity || 1),
-                ),
-                currencyCode: merchandise.price.currencyCode,
-              }
-            }
-          />
-          <ul>
-            {selectedOptions
-              .filter((option) => option.value !== 'Default Title')
-              .map((option) => (
-                <li key={option.name}>
-                  <small>
-                    {option.name}: {option.value}
-                  </small>
-                </li>
-              ))}
-            {/* The Shaheen serial number chosen in the configurator. */}
-            {line.attributes
-              ?.filter((attribute) => attribute.key === SERIAL_ATTRIBUTE)
-              .map((attribute) => (
-                <li key={attribute.key}>
-                  <small className="cart-line-serial">{attribute.value}</small>
-                </li>
-              ))}
-          </ul>
+          ) : null}
+          {serial ? <p className="cart-line-serial">{serial}</p> : null}
           <CartLineQuantity line={line} />
         </div>
       </div>
@@ -136,29 +149,37 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
-      <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-        <button
-          aria-label="Decrease quantity"
-          disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
-        >
-          <span>&#8722; </span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
-      <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
-        <button
-          aria-label="Increase quantity"
-          name="increase-quantity"
-          value={nextQuantity}
-          disabled={!!isOptimistic || numbered}
-        >
-          <span>&#43;</span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
+      {/* One numbered bike, one line: no stepper to show. */}
+      {numbered && quantity === 1 ? null : (
+        <div className="qty-stepper" role="group" aria-label="Quantity">
+          <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
+            <button
+              className="qty-button"
+              aria-label="Decrease quantity"
+              disabled={quantity <= 1 || !!isOptimistic}
+              name="decrease-quantity"
+              value={prevQuantity}
+            >
+              <span aria-hidden="true">&#8722;</span>
+            </button>
+          </CartLineUpdateButton>
+          <span className="qty-value" aria-live="polite">
+            <span className="sr-only">Quantity </span>
+            {quantity}
+          </span>
+          <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
+            <button
+              className="qty-button"
+              aria-label="Increase quantity"
+              name="increase-quantity"
+              value={nextQuantity}
+              disabled={!!isOptimistic || numbered}
+            >
+              <span aria-hidden="true">&#43;</span>
+            </button>
+          </CartLineUpdateButton>
+        </div>
+      )}
       <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
@@ -183,7 +204,7 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
+      <button className="cart-line-remove" disabled={disabled} type="submit">
         Remove
       </button>
     </CartForm>

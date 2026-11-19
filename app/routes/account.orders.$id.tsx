@@ -156,6 +156,20 @@ export default function OrderRoute() {
               <Money data={order.subtotal!} />
             </td>
           </tr>
+          {order.shippingLine ? (
+            <tr>
+              <th scope="row" colSpan={3}>
+                Delivery · {order.shippingLine.title}
+              </th>
+              <td>
+                {Number(order.totalShipping.amount) === 0 ? (
+                  'Free'
+                ) : (
+                  <Money data={order.totalShipping} />
+                )}
+              </td>
+            </tr>
+          ) : null}
           <tr>
             <th scope="row" colSpan={3}>
               Tax

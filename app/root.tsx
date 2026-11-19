@@ -17,6 +17,18 @@ import {HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
+import resetInline from '~/styles/reset.css?inline';
+import appInline from '~/styles/app.css?inline';
+import tailwindInline from './styles/tailwind.css?inline';
+
+/**
+ * In production the stylesheets are written into the page (~16 KB gzipped):
+ * no render-blocking requests before the first paint. In development they
+ * stay as links, for hot reloading (see the note above `links`).
+ */
+const INLINE_CSS = import.meta.env.PROD
+  ? [tailwindInline, resetInline, appInline].join('\n')
+  : null;
 import manropeFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
 import unboundedFont from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
 import {PageLayout} from './components/PageLayout';
@@ -164,9 +176,15 @@ export function Layout({children}: {children?: React.ReactNode}) {
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link rel="stylesheet" href={tailwindCss}></link>
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
+        {INLINE_CSS ? (
+          <style dangerouslySetInnerHTML={{__html: INLINE_CSS}} />
+        ) : (
+          <>
+            <link rel="stylesheet" href={tailwindCss}></link>
+            <link rel="stylesheet" href={resetStyles}></link>
+            <link rel="stylesheet" href={appStyles}></link>
+          </>
+        )}
         <Meta />
         <Links />
         <script

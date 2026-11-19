@@ -10,3 +10,6 @@ node_modules
 h2_deploy_log.json
 .wrangler
 .dev.vars
+
+# Working notes (French), kept out of the public repo
+NOTES.md

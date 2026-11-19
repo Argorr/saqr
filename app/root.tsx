@@ -25,10 +25,16 @@ import tailwindInline from './styles/tailwind.css?inline';
  * In production the stylesheets are written into the page (~16 KB gzipped):
  * no render-blocking requests before the first paint. In development they
  * stay as links, for hot reloading (see the note above `links`).
+ *
+ * Only the server bundle carries the CSS text. The browser reads it back from
+ * the page, so hydration matches and the JavaScript stays light.
  */
-const INLINE_CSS = import.meta.env.PROD
-  ? [tailwindInline, resetInline, appInline].join('\n')
-  : null;
+const INLINE_CSS_ID = 'saqr-css';
+const INLINE_CSS = !import.meta.env.PROD
+  ? null
+  : import.meta.env.SSR
+    ? [tailwindInline, resetInline, appInline].join('\n')
+    : (document.getElementById(INLINE_CSS_ID)?.textContent ?? '');
 import manropeFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
 import unboundedFont from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
 import {PageLayout} from './components/PageLayout';
@@ -177,7 +183,10 @@ export function Layout({children}: {children?: React.ReactNode}) {
           crossOrigin="anonymous"
         />
         {INLINE_CSS ? (
-          <style dangerouslySetInnerHTML={{__html: INLINE_CSS}} />
+          <style
+            id={INLINE_CSS_ID}
+            dangerouslySetInnerHTML={{__html: INLINE_CSS}}
+          />
         ) : (
           <>
             <link rel="stylesheet" href={tailwindCss}></link>

@@ -1,5 +1,5 @@
-import {useMemo, useState} from 'react';
-import {useNavigate} from 'react-router';
+import {useId, useMemo, useState} from 'react';
+import {Link, useNavigate} from 'react-router';
 import {Image, Money, type MappedProductOptions} from '@shopify/hydrogen';
 import type {
   ProductFragment,
@@ -14,8 +14,10 @@ import {
   FINISHES,
   LIMITED_TAG,
   SERIAL_ATTRIBUTE,
-  SIZES,
+  SIZE_RANGES,
   formatSerial,
+  sizeRange,
+  sizesForHeight,
 } from '~/lib/saqr';
 import {SerialPicker, firstFreeSerial} from './SerialPicker';
 
@@ -338,7 +340,7 @@ function OptionGroup({
         : 'pill';
   const hint =
     option.name === 'Size' && selected
-      ? SIZES[selected.name] && `Rider height ${SIZES[selected.name]}`
+      ? sizeRange(selected.name) && `Rider height ${sizeRange(selected.name)}`
       : option.name === 'Finish' && selected
         ? FINISHES[selected.name]?.text
         : null;
@@ -434,7 +436,114 @@ function OptionGroup({
           {hint}
         </p>
       ) : null}
+
+      {option.name === 'Size' ? (
+        <SizeFinder option={option} onChoose={onChoose} />
+      ) : null}
     </fieldset>
+  );
+}
+
+/**
+ * "Which size am I?": the rider's height gives the frame size, with a button
+ * to pick it. Between two sizes, it says what each one feels like.
+ */
+function SizeFinder({
+  option,
+  onChoose,
+}: {
+  option: MappedProductOptions;
+  onChoose: (value: OptionValue) => void;
+}) {
+  const inputId = useId();
+  const [height, setHeight] = useState('');
+  const cm = Number(height);
+  const entered = height.trim() !== '';
+  const valid = entered && Number.isFinite(cm) && cm >= 100 && cm <= 230;
+  const fits = valid
+    ? sizesForHeight(cm)
+        .map((size) => option.optionValues.find((value) => value.name === size))
+        .filter((value): value is OptionValue => Boolean(value?.exists))
+    : [];
+  const sizes = Object.keys(SIZE_RANGES);
+  const smallest = SIZE_RANGES[sizes[0]]?.[0];
+  const largest = SIZE_RANGES[sizes[sizes.length - 1]]?.[1];
+
+  let message: React.ReactNode = null;
+  if (entered && !valid) {
+    message = 'Enter your height in centimetres, for example 175.';
+  } else if (fits.length === 1) {
+    message = (
+      <>
+        Size <strong>{fits[0].name}</strong> fits you.
+      </>
+    );
+  } else if (fits.length === 2) {
+    message = (
+      <>
+        You are between <strong>{fits[0].name}</strong> and{' '}
+        <strong>{fits[1].name}</strong>. {fits[0].name} sits you more upright
+        and turns quicker in traffic; {fits[1].name} stretches you out for
+        longer rides.
+      </>
+    );
+  } else if (valid) {
+    message = (
+      <>
+        The S1 is built for riders from {smallest} to {largest} cm.{' '}
+        <Link to="/pages/contact" className="size-finder-link">
+          Write to the atelier
+        </Link>{' '}
+        and we will see what we can do.
+      </>
+    );
+  }
+
+  return (
+    <details className="size-finder">
+      <summary>Which size am I?</summary>
+      <div className="size-finder-body">
+        <label htmlFor={inputId} className="size-finder-label">
+          Your height
+        </label>
+        <div className="size-finder-field">
+          <input
+            id={inputId}
+            type="number"
+            inputMode="numeric"
+            min={100}
+            max={230}
+            placeholder="175"
+            value={height}
+            onChange={(event) => setHeight(event.target.value)}
+          />
+          <span aria-hidden="true">cm</span>
+        </div>
+        <p className="size-finder-result" aria-live="polite">
+          {message}
+        </p>
+        {fits.length ? (
+          <div className="size-finder-actions">
+            {fits.map((value) =>
+              value.selected ? (
+                <span key={value.name} className="size-finder-chosen">
+                  {value.name} selected
+                </span>
+              ) : (
+                <button
+                  key={value.name}
+                  type="button"
+                  className="size-finder-choose"
+                  onClick={() => onChoose(value)}
+                >
+                  Choose {value.name}
+                </button>
+              ),
+            )}
+          </div>
+        ) : null}
+      </div>
+    </details>
   );
 }
 

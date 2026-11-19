@@ -19,12 +19,25 @@ export const FINISHES: Record<string, {swatch: string; text: string}> = {
   },
 };
 
-/** Rider height for each frame size. */
-export const SIZES: Record<string, string> = {
-  S: '155–170 cm',
-  M: '168–183 cm',
-  L: '181–196 cm',
+/** Rider height (cm) for each frame size, smallest first. Neighbours overlap. */
+export const SIZE_RANGES: Record<string, [number, number]> = {
+  S: [155, 170],
+  M: [168, 183],
+  L: [181, 196],
 };
+
+/** "168–183 cm" */
+export function sizeRange(size: string) {
+  const range = SIZE_RANGES[size];
+  return range ? `${range[0]}–${range[1]} cm` : null;
+}
+
+/** The frame sizes that fit a rider of this height (two in an overlap). */
+export function sizesForHeight(height: number) {
+  return Object.entries(SIZE_RANGES)
+    .filter(([, [min, max]]) => height >= min && height <= max)
+    .map(([size]) => size);
+}
 
 export const BATTERIES: Record<string, {range: string; text: string}> = {
   '540 Wh': {

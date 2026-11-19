@@ -1631,6 +1631,141 @@ aside main {
   padding: 1rem 1.125rem;
 }
 
+/* "Which size am I?" under the size pills (`ProductConfigurator.tsx`). */
+.size-finder {
+  margin-top: 0.75rem;
+}
+
+.size-finder summary {
+  color: var(--color-copper);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  list-style: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.size-finder summary::-webkit-details-marker {
+  display: none;
+}
+
+.size-finder summary:hover {
+  color: var(--color-copper-strong);
+}
+
+.size-finder-body {
+  background: var(--color-ink-2);
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  margin-top: 0.75rem;
+  padding: 1rem 1.125rem;
+}
+
+.size-finder-label {
+  color: var(--color-sand-muted);
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.size-finder-field {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.size-finder-field input {
+  background: var(--color-ink);
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  color: var(--color-sand);
+  font: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  width: 7rem;
+  -moz-appearance: textfield;
+}
+
+.size-finder-field input::-webkit-inner-spin-button,
+.size-finder-field input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.size-finder-field input:focus-visible {
+  border-color: var(--color-copper);
+  outline: none;
+}
+
+.size-finder-field span {
+  color: var(--color-sand-muted);
+  font-size: 0.9375rem;
+}
+
+.size-finder-result {
+  color: var(--color-sand);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0.875rem 0 0;
+}
+
+.size-finder-result:empty {
+  display: none;
+}
+
+.size-finder-result strong {
+  color: var(--color-copper);
+}
+
+.size-finder-link {
+  color: var(--color-copper);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.size-finder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.size-finder-choose,
+.size-finder-chosen {
+  align-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-height: 2.5rem;
+  padding: 0 1.125rem;
+}
+
+.size-finder-choose {
+  background: none;
+  color: var(--color-sand);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.size-finder-choose:hover {
+  border-color: var(--color-copper);
+  color: var(--color-copper);
+}
+
+.size-finder-chosen {
+  border-color: var(--color-copper);
+  color: var(--color-copper);
+}
+
 label:hover > .configurator-swatch,
 label:hover > .configurator-pill,
 label:hover > .configurator-card,

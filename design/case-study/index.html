@@ -1,0 +1,416 @@
+<title>Saqr Storefront Case Study</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+  /* Layout: one editorial column in the store's own night palette, full-width screenshot bands, copper used sparingly. */
+  :root {
+    --ink: #0b0b0c;
+    --ink-2: #141416;
+    --ink-3: #1e1e21;
+    --line: #2c2c30;
+    --sand: #ece3d2;
+    --sand-muted: #a9a294;
+    --copper: #e2763a;
+    --copper-strong: #f08a4b;
+    --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+    --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "Instrument Serif", "Times New Roman", Georgia, serif;
+    --measure: 64ch;
+    --wide: 1180px;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ink);
+    color: var(--sand);
+    font-family: var(--body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--copper); text-underline-offset: 4px; }
+  a:hover { color: var(--copper-strong); }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
+
+  .wrap {
+    max-width: var(--wide);
+    margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  section { padding-block: clamp(3rem, 7vw, 5.5rem); border-top: 1px solid var(--line); }
+
+  .eyebrow {
+    color: var(--copper);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin: 0 0 1rem;
+  }
+  h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+  h1 {
+    font-size: clamp(2.5rem, 7.5vw, 5.75rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+  h3 { font-size: 1.0625rem; font-weight: 700; line-height: 1.3; }
+  p { margin: 0; max-width: var(--measure); }
+  .lead { font-size: clamp(1.0625rem, 1.6vw, 1.25rem); line-height: 1.55; color: var(--sand); }
+  .quote { font-family: var(--serif); font-style: italic; font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.35; color: var(--sand-muted); }
+  .muted { color: var(--sand-muted); }
+  code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.86em; background: var(--ink-2); border: 1px solid var(--line); padding: 0.05em 0.35em; border-radius: 2px; overflow-wrap: anywhere; }
+
+  /* Top bar */
+  .topbar { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between; align-items: center; padding-block: 1.25rem; font-size: 0.8125rem; color: var(--sand-muted); border-bottom: 1px solid var(--line); }
+  .brand { display: inline-flex; align-items: baseline; color: var(--sand); font-family: var(--display); font-weight: 800; font-size: 1.15rem; letter-spacing: 0.04em; position: relative; }
+  .brand .q { position: relative; }
+  .brand .q::before, .brand .q::after { content: ""; position: absolute; top: -0.32em; width: 0.2em; height: 0.2em; background: var(--copper); transform: rotate(45deg); }
+  .brand .q::before { left: 0.2em; }
+  .brand .q::after { left: 0.5em; }
+
+  /* Hero */
+  .hero { padding-block: clamp(2.5rem, 7vw, 5rem) clamp(2rem, 5vw, 3.5rem); display: grid; gap: 2rem; }
+  .hero h1 em { font-style: normal; color: var(--copper); }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 2rem; border-top: 1px solid var(--line); padding-top: 1.25rem; margin: 0; }
+  .meta dt { font-size: 0.75rem; color: var(--sand-muted); text-transform: uppercase; letter-spacing: 0.2em; }
+  .meta dd { margin: 0.25rem 0 0; font-weight: 500; }
+
+  .shot { margin: 0; display: grid; gap: 0.6rem; min-width: 0; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: var(--ink-2); border-radius: 2px; }
+  .shot figcaption { font-size: 0.8125rem; color: var(--sand-muted); }
+
+  /* Figures strip */
+  .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); border: 1px solid var(--line); }
+  .figure { padding: 1.25rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-right: -1px; margin-bottom: -1px; }
+  .figure b { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(1.75rem, 3.6vw, 2.4rem); line-height: 1; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .figure b small { font-family: var(--body); font-size: 0.9rem; font-weight: 600; color: var(--copper); margin-left: 0.3rem; }
+  .figure span { display: block; margin-top: 0.6rem; font-size: 0.8125rem; color: var(--sand-muted); }
+
+  .split { display: grid; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  @media (min-width: 900px) {
+    .split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+    .split--flip { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+    .split--flip > :first-child { order: 2; }
+  }
+  .stack { display: grid; gap: 1.1rem; min-width: 0; align-content: start; }
+
+  ul.marks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  ul.marks li { position: relative; padding-left: 1.4rem; max-width: var(--measure); }
+  ul.marks li::before { content: ""; position: absolute; left: 0.1rem; top: 0.62em; width: 6px; height: 6px; background: var(--copper); transform: rotate(45deg); }
+  ul.marks b { color: var(--sand); }
+
+  /* Build timeline: the four real stages of a Saqr order */
+  .timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
+  .stage { padding: 1rem 1rem 1.1rem; border-right: 1px solid var(--line); min-width: 0; }
+  .stage:last-child { border-right: 0; }
+  .stage .day { font-family: var(--serif); font-style: italic; font-size: 1.6rem; color: var(--copper); line-height: 1; }
+  .stage b { display: block; margin-top: 0.5rem; font-size: 0.9375rem; }
+  .stage span { display: block; font-size: 0.8125rem; color: var(--sand-muted); }
+  @media (max-width: 640px) {
+    .timeline { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .stage:nth-child(2) { border-right: 0; }
+    .stage:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--sand-muted); background: var(--ink-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .up { color: var(--copper); font-weight: 600; }
+
+  ol.flow { list-style: none; counter-reset: s; margin: 0; padding: 0; border: 1px solid var(--line); }
+  ol.flow li { counter-increment: s; display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0.75rem; padding: 1rem; border-bottom: 1px solid var(--line); }
+  ol.flow li:last-child { border-bottom: 0; }
+  ol.flow li::before { content: counter(s, decimal-leading-zero); font-family: var(--serif); font-style: italic; color: var(--copper); font-size: 1.25rem; line-height: 1.2; }
+  ol.flow b { display: block; }
+
+  .duo { display: grid; gap: 1.25rem; align-items: start; }
+  @media (min-width: 900px) { .duo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  .phone { max-width: 300px; }
+  .phones { display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: flex-start; }
+
+  .note { border-left: 2px solid var(--copper); padding: 0.2rem 0 0.2rem 1rem; color: var(--sand-muted); font-size: 0.92rem; max-width: var(--measure); }
+
+  .left-out { display: grid; gap: 0; border: 1px solid var(--line); }
+  @media (min-width: 760px) { .left-out { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .left-out div { padding: 1.1rem 1.2rem; border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .left-out div:nth-child(odd) { border-right: 1px solid var(--line); } .left-out div:nth-last-child(-n+2) { border-bottom: 0; } }
+  .left-out b { display: block; margin-bottom: 0.25rem; }
+  .left-out p { font-size: 0.92rem; color: var(--sand-muted); }
+
+  .swatches { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .swatch { display: grid; gap: 0.4rem; font-size: 0.78rem; color: var(--sand-muted); }
+  .swatch i { display: block; width: 4.5rem; height: 3rem; border: 1px solid var(--line); border-radius: 2px; }
+
+  footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var(--sand-muted); font-size: 0.8125rem; display: grid; gap: 0.5rem; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero h1 { animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+    @keyframes rise { from { transform: translateY(16px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+  }
+</style>
+
+<div class="wrap">
+  <header class="topbar">
+    <span class="brand" aria-label="Saqr">SA<span class="q">Q</span>R</span>
+    <span>Shopify Hydrogen storefront · case study</span>
+  </header>
+
+  <div class="hero">
+    <div class="stack">
+      <p class="eyebrow">Portfolio project · Shopify Hydrogen</p>
+      <h1>Few bikes, <em>built to order</em></h1>
+      <p class="lead">Saqr is an invented brand of hand-built urban e-bikes, named after the Arabic word for falcon. I created the brand and built its storefront as a custom Shopify Hydrogen app: a configurator, a numbered limited edition, a delivery date that follows the six-week build, and a customer account that tracks each bike through the atelier.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Role</dt><dd>Brand, design, front-end and Shopify development</dd></div>
+      <div><dt>Stack</dt><dd>Hydrogen · React Router 7 · TypeScript · Tailwind CSS</dd></div>
+      <div><dt>Shopify</dt><dd>Storefront API · Customer Account API · Admin GraphQL</dd></div>
+      <div><dt>Live demo</dt><dd><a href="https://saqr.argorr.workers.dev">saqr.argorr.workers.dev</a></dd></div>
+    </dl>
+    <figure class="shot">
+      <img src="shots/home-hero.jpg" width="1440" height="860" alt="Saqr homepage: a night street film behind the headline Swift by nature, with Explore the bikes and Accessories buttons.">
+      <figcaption>Homepage. The film starts only after the headline has painted; until then the still frame stays.</figcaption>
+    </figure>
+  </div>
+
+  <div class="figures" role="list">
+    <div class="figure" role="listitem"><b>21</b><span>bike variants: 18 for the S1, 3 for the Shaheen</span></div>
+    <div class="figure" role="listitem"><b>99</b><span>numbered Shaheen bikes, one number per cart line</span></div>
+    <div class="figure" role="listitem"><b>42<small>days</small></b><span>from order to delivery, shown before and after checkout</span></div>
+    <div class="figure" role="listitem"><b>100</b><span>Lighthouse accessibility, best practices and SEO on key pages</span></div>
+    <div class="figure" role="listitem"><b>1.2<small>s</small></b><span>largest paint measured by Chrome on the live homepage</span></div>
+  </div>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <p class="eyebrow">The brief</p>
+        <h2>A showroom, not a catalogue</h2>
+      </div>
+      <div class="stack">
+        <p>The store had to read like a small, high-end workshop: one flagship bike in three finishes, a limited series, three accessories. That rules out the patterns of a big catalogue and puts the effort into the moments a buyer of a €9,000 bike actually cares about: choosing their build, knowing when it arrives, and following it once paid.</p>
+        <p>One rule decided most of the features: add something only if it answers a real question the customer has at that moment. Loyalty points, wishlists and "you may also like" rows were left out on purpose. Scroll-jacking was ruled out from the start, so the page never stops scrolling to play an animation.</p>
+        <p class="quote">"Built by hand to your configuration. Order today, at home around 31 December."</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split split--flip">
+      <div class="stack">
+        <p class="eyebrow">Brand</p>
+        <h2>A falcon in the letters</h2>
+        <p>The logo sets SAQR in squared, Kufic-inspired letters. The two copper diamonds above the Q are the dots of the Arabic letter qaf (ق), the letter that sounds the Q in saqr. On the first page of a visit the logo draws itself: the band traces in, the letters rise, then the two dots drop into place like a falcon's stoop. It plays once per session and not at all when the visitor prefers reduced motion.</p>
+        <p>The palette is the city after dark. Unbounded carries the headlines, Manrope the text, and Instrument Serif in italics marks the human details: press quotes, finish descriptions, serial numbers. A 4.5% film grain sits over the black.</p>
+        <div class="swatches" aria-label="Brand colours">
+          <div class="swatch"><i style="background: var(--ink)"></i>Ink #0B0B0C</div>
+          <div class="swatch"><i style="background: var(--ink-2)"></i>Night #141416</div>
+          <div class="swatch"><i style="background: var(--sand)"></i>Sand #ECE3D2</div>
+          <div class="swatch"><i style="background: var(--copper)"></i>Copper #E2763A</div>
+        </div>
+      </div>
+      <figure class="shot">
+        <img src="shots/atelier.jpg" width="1440" height="860" alt="The Atelier section: Made by hand, one at a time, with three figures (6 weeks, 1 mechanic, 140 checks) beside a close-up of hands on a copper frame.">
+        <figcaption>The Atelier section of the homepage.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="stack">
+      <p class="eyebrow">Configurator</p>
+      <h2>Your build, in one place</h2>
+    </div>
+    <div class="split" style="margin-top: 2rem">
+      <div class="stack">
+        <ul class="marks">
+          <li><b>Native radio groups.</b> Finish, size and battery are real form controls, so arrow keys, labels and focus work without extra code.</li>
+          <li><b>Prices read from Shopify.</b> "+ €600" next to the long-range battery is computed from the variant it leads to, never typed in.</li>
+          <li><b>A shareable URL.</b> Every choice updates the address (<code>?Finish=Copper&amp;Size=M&amp;Battery=720+Wh</code>) without a page jump.</li>
+          <li><b>Which size am I?</b> The rider's height gives the frame size, with a button to pick it. Between two sizes it explains the difference; outside the range it points to the atelier.</li>
+          <li><b>Add-ons and one total.</b> Accessories tick on below the bike, and one click reserves the whole build.</li>
+        </ul>
+        <p class="note">Size ranges live in one table of numbers, used both by the size finder and by the "Rider height 168–183 cm" hint, so the two can never disagree.</p>
+      </div>
+      <figure class="shot">
+        <img src="shots/s1-configurator.jpg" width="1440" height="1080" alt="Saqr S1 product page in Copper: finish swatches, size M selected, and the size finder open at 182 cm suggesting M or L.">
+        <figcaption>S1 in Copper, 720 Wh. At 182 cm the rider sits between two frame sizes.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="split split--flip">
+      <div class="stack">
+        <p class="eyebrow">Limited edition</p>
+        <h2>Choose your number</h2>
+        <p>The S1 Shaheen is a series of 99. Its page shows the register of every number: taken ones are struck through, free ones can be picked, and the button reads "Reserve No. 02 · €12,900".</p>
+        <p>The chosen number travels with the cart line as a Shopify line attribute, so it appears in the cart, at checkout, on the order and in the customer's account. A numbered line can't go above a quantity of one: one number, one bike.</p>
+      </div>
+      <figure class="shot">
+        <img src="shots/shaheen.jpg" width="1440" height="1050" alt="Saqr S1 Shaheen page with the register of 99 numbers, number 02 selected, and the Reserve No. 02 button.">
+        <figcaption>The Shaheen register: 41 of 99 still free.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="stack">
+      <p class="eyebrow">Delivery</p>
+      <h2>A date, not a shipping rate</h2>
+      <p>A bike built to order doesn't ship in three days, so the storefront never pretends it does. The expected date is computed on the server from the six-week build and shown on the product page, in the cart, and again on the order. Delivery is complimentary on everything, which suits a brand at this price.</p>
+    </div>
+    <div class="duo" style="margin-top: 2rem">
+      <figure class="shot">
+        <img src="shots/cart.jpg" width="1440" height="900" alt="Cart page with a Shaheen numbered 07 and an S1, a summary card with free delivered-and-fitted delivery, the expected date and a Checkout button.">
+        <figcaption>The cart: delivered and fitted at home, free, with the expected date.</figcaption>
+      </figure>
+      <div class="stack">
+        <figure class="shot">
+          <img src="shots/checkout-mixed.jpg" width="540" height="215" alt="Shopify checkout shipping section: your order will arrive in 2 shipments, a charger with dates and a bike delivered and fitted at home, both free.">
+          <figcaption>Shopify's checkout, branded to match. A bike and an accessory arrive as two named shipments.</figcaption>
+        </figure>
+        <p>Getting there meant reading the platform rather than guessing. Rates edited through the Admin API never reached checkout; the admin showed why: this store manages shipping in Markets. The fix was one option name shared by bikes and accessories, so Shopify combines them under "Complimentary delivery" instead of its generic "Shipping".</p>
+        <p class="note">Checkout and account pages are hosted by Shopify. The branding API is limited to Plus stores, so their colours, fonts and logo were set in the checkout editor, page by page.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <p class="eyebrow">Customer account</p>
+        <h2>Follow your bike through the atelier</h2>
+        <p>For bike orders, the account page replaces Shopify's parcel tracking with a build tracker. It is computed on the server from the order date, names the mechanic assigned to the bike, shows the Shaheen number large, and switches to "Delivered and fitted" as soon as the order is fulfilled in Shopify. Orders without a bike keep the standard tracking link.</p>
+      </div>
+      <figure class="shot">
+        <img src="shots/tracker.png" width="872" height="433" alt="Build progress card: Ordered, expected at home 31 December, mechanic Karim, number 81 of 99, and four stages from Ordered to Delivered and fitted.">
+        <figcaption>A real test order for Shaheen No. 81, placed through the store's test gateway.</figcaption>
+      </figure>
+    </div>
+    <div class="timeline" style="margin-top: 2rem" aria-label="Build stages">
+      <div class="stage"><span class="day">Day 0</span><b>Ordered</b><span>Confirmed, mechanic assigned</span></div>
+      <div class="stage"><span class="day">Day 3</span><b>In the atelier</b><span>Frame to final ride by one person</span></div>
+      <div class="stage"><span class="day">Day 35</span><b>Final checks</b><span>Torque, cables, test ride</span></div>
+      <div class="stage"><span class="day">Day 42</span><b>Delivered and fitted</b><span>At home, set up for the rider</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split split--flip">
+      <div class="stack">
+        <p class="eyebrow">Performance</p>
+        <h2>Fast first paint on a phone</h2>
+        <p>The homepage is heavy by design: a full-screen film, a turning bike, large photography. The work went into making the first screen appear at once and letting the rest follow.</p>
+        <ul class="marks">
+          <li><b>Stylesheets written into the page.</b> No render-blocking CSS request before the first paint. Only the server carries the CSS text; the browser reads it back from the page, so the JavaScript stays light.</li>
+          <li><b>Fonts preloaded</b> alongside the page instead of after the stylesheets.</li>
+          <li><b>Headline counted at first paint.</b> Its fade starts from an opacity of 0.01, invisible to the eye, because Chrome ignores fully transparent text for Largest Contentful Paint.</li>
+          <li><b>Film after the headline.</b> The hero video starts once the largest paint has happened, so its download never competes with the text.</li>
+        </ul>
+      </div>
+      <div class="stack">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Live homepage, Lighthouse mobile</th><th>Before</th><th>After</th></tr></thead>
+            <tbody>
+              <tr><td>Performance score</td><td class="num">73</td><td class="num up">80–89</td></tr>
+              <tr><td>First Contentful Paint (simulated)</td><td class="num">3.4 s</td><td class="num up">2.0–2.6 s</td></tr>
+              <tr><td>Largest Contentful Paint (simulated)</td><td class="num">5.2 s</td><td class="num up">3.6–4.7 s</td></tr>
+              <tr><td>Largest Contentful Paint (measured)</td><td class="num">1.5 s</td><td class="num up">1.2 s</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Three runs each, on the same day. What remains in the simulated figure is the cost of hydrating a rich React homepage; going further would mean restructuring the page.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <p class="eyebrow">Phone first</p>
+        <h2>Checked at phone width, every time</h2>
+        <p>Every page was screenshotted at desktop and phone width before shipping. A review of all nineteen public pages caught what normal use never shows: empty collection cards, a blog index with a single link, 404 pages without a tab title, and one pixel of sideways scroll on phones from an edge gradient.</p>
+        <p>Display bugs were checked in Firefox too. One fix came from there: rounded buttons briefly lost their ends on hover, because Firefox repainted them during a colour transition. Every button now fades in a separate layer instead.</p>
+      </div>
+      <div class="phones">
+        <figure class="shot phone">
+          <img src="shots/home-hero-phone.jpg" width="390" height="844" alt="Homepage on a phone: vertical crop of the night film, headline and two buttons.">
+          <figcaption>Phones get a vertical crop of the film.</figcaption>
+        </figure>
+        <figure class="shot phone">
+          <img src="shots/cart-phone.jpg" width="390" height="1902" alt="Cart page on a phone: lines stacked above the summary card.">
+          <figcaption>The cart stacks its summary under the lines.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <p class="eyebrow">Workflow</p>
+        <h2>Every change ships the same way</h2>
+        <p>The catalogue, articles and pages are created by scripts against the Admin GraphQL API through Shopify CLI, each operation validated against the schema before it runs.</p>
+      </div>
+      <ol class="flow">
+        <li><div><b>Build in small numbered steps</b><span class="muted">Hero, anatomy, configurator, collections, account, journal, finishing touches: each one previewed and committed on its own.</span></div></li>
+        <li><div><b>Check in a production build</b><span class="muted">Scripted screenshots on desktop and phone, Lighthouse, and TypeScript and ESLint on every change.</span></div></li>
+        <li><div><b>Test the real flow</b><span class="muted">Carts and full checkouts run against the live store with Shopify's test gateway, then read back through the API.</span></div></li>
+        <li><div><b>Deploy to both hosts</b><span class="muted">One command publishes to Shopify Oxygen and to Cloudflare Workers, the public address, and refuses to run with uncommitted changes.</span></div></li>
+        <li><div><b>Write it down</b><span class="muted">Decisions, dead ends and how to redo each step are kept in the project notes.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="stack">
+      <p class="eyebrow">Left out</p>
+      <h2>Tried, then dropped</h2>
+      <p>Some ideas were built, judged on the real page, and removed. Knowing when to stop is part of the work.</p>
+    </div>
+    <div class="left-out" style="margin-top: 2rem">
+      <div><b>Scroll-driven bike rotation</b><p>The page stopped scrolling until the bike had turned. It became a looping film in a normal-height section.</p></div>
+      <div><b>A 3D bike in three.js</b><p>Built in code, but not convincing enough next to the photography.</p></div>
+      <div><b>Page transitions</b><p>The card photo flew into the product page. It looked clever and added nothing.</p></div>
+      <div><b>A falcon-dive zoom</b><p>The bike plunged onto its motor into the Atelier photo. Removed before it was committed.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <p class="eyebrow">Collection</p>
+        <h2>Bikes as chapters</h2>
+        <p>Square product cards cropped the bikes, so the Bikes collection became one editorial chapter per bike: the whole photo faded into the page, a serif number, the line that sells it, three key figures and the price.</p>
+      </div>
+      <figure class="shot">
+        <img src="shots/bikes.jpg" width="1440" height="1250" alt="Bikes collection page with the S1 shown as chapter 01: full photo, name, tagline, range, motor and weight figures, price from 8,900 euros.">
+        <figcaption>The Bikes collection, chapter 01.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Saqr is a fictional brand on a Shopify development store. Products, prices, press quotes and orders are demo content; no bike will be shipped.</p>
+    <p>Product photography and the turntable film were generated with AI tools (Gemini, Kling) from my own prompts, then edited and upscaled.</p>
+  </footer>
+</div>
